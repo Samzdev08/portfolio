@@ -1,0 +1,479 @@
+/* Animation de fondu et de montée */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation de zoom progressif pour les icônes */
+@keyframes iconZoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animation de rotation douce */
+@keyframes rotateIn {
+    0% {
+        opacity: 0;
+        transform: rotate(-10deg) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+/* Animation de rotation pour l'image */
+@keyframes rotate {
+    0% {
+        transform: scale(1) translateY(100%); 
+        opacity: 0;
+    }
+    
+    100% {
+        transform: scale(1.1) rotate(0) translateY(0);  
+        opacity: 1;
+    }
+}
+
+/* Animation de fondu */
+@keyframes fadeIn {
+    0% {
+        transform: scale(0); 
+        opacity: 0;
+    }
+    
+    100% {
+        transform: scale(1);  
+        opacity: 1;
+    }
+}
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    background-color: #161616;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    overflow-x: hidden; /* Empêche le défilement horizontal */
+}
+
+/* Logo */
+.logo-container img {
+    width: 50px;
+    border-radius: 50%;
+    margin-top: -10px;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.logo-container {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap; /* Permet à l'élément de se repositionner sur les petits écrans */
+}
+
+.logo-container span {
+    font-weight: bold;
+}
+
+/* Header */
+.header {
+    display: flex;
+    padding: 3%;
+    justify-content: space-between;
+    font-size: 20px;
+    flex-wrap: wrap;
+    animation: fadeInUp 1s ease-out;
+}
+
+/* Navigation */
+.navigation {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    font-weight: bold;
+    flex-wrap: wrap; /* Permet à la navigation de se réorganiser sur des écrans plus petits */
+}
+a {
+    transition: 0.4s;
+}
+.navigation a:not(.active) {
+    color: #a7a7a7;
+}
+.navigation a:hover {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    color: #fff;
+}
+
+.navigation .active {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+/* Deco (Decoration) */
+.decoration img {
+    width: 15px;
+    cursor: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Main Section */
+.main-content {
+    padding: 40px;
+    width: 100%;
+    margin: 0 auto;
+    border-top: 2px solid #2b2a33;
+    border-radius: 1px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    gap: 80px;
+}
+
+.greeting-message {
+    padding: 15px;
+    width: 8%;
+    font-size: 15px;
+    border-radius: 40px;
+    font-weight: bold;
+    background-color: #2b2a33;
+    transition: 0.6s;
+    animation: fadeInUp 1s ease-out 0.6s backwards;
+}
+
+.greeting-message:hover {
+    transform: scale(1.15);
+}
+
+.main-content h1 {
+    padding: 20px;
+    font-size: 35px;
+    letter-spacing: 2px;
+    line-height: 200%;
+    animation: fadeInUp 1.2s ease-out 0.8s backwards;
+}
+
+.main-content h1 span {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+/* Image Display */
+.image-display {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    top: 30%;
+    margin: 50px auto;
+    animation: rotate 2s forwards;
+    flex-wrap: wrap; /* Permet l'ajustement de l'image en cas de réduction de la taille d'écran */
+}
+
+/* Skills Section */
+.skills-section {
+    position: relative;
+    border-top: 2px solid #2b2a33;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 70vh;
+    gap: 30px;
+}
+
+.skills-header h1 {
+    text-align: center;
+    font-size: 45px;
+    padding: 20px;
+}
+
+.yes {
+    display: flex;
+    width: 100%;
+    padding: 80px;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+/* Animation des containers de technologies */
+.technologies-container,
+.skills-container {
+    flex: 1;
+    max-width: 28%;
+    min-width: 300px;
+    background-color: #1f1e1f;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 165, 138, 0.6);
+    text-align: center;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+/* Animation des icônes de technologies */
+.technology-icons,
+.skill-icons {
+    flex-wrap: wrap;
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    justify-content: center;
+}
+
+.technology-item,
+.skill-item {
+    margin-top: 15px;
+    border-radius: 10px;
+    background-color: #2b2a33;
+    padding: 10px;
+    transition: 0.5s;
+    animation: fadeInUp 1s ease-out 1.2s backwards;
+}
+
+.technology-item img,
+.skill-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    transition: 0.3s ease, opacity 0.3s ease;
+}
+
+
+
+.skill-item:hover {
+    background-color: #6a6a6a;
+}
+
+.technology-item:hover {
+    background-color: #6a6a6a;
+}
+
+/* Projects Section */
+.projects-container {
+    display: flex;
+    padding: 50px;
+    border-top: 2px solid #2b2a33;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.card {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 90%;
+}
+
+.card-projet {
+    width: 350px;
+    height: 450px;
+    background-color: #1f1e1f;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0px 0 10px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 15px;
+    transition: 0.3s ease-in-out;
+    animation: rotateIn 1s ease-out 1.4s backwards;
+}
+
+.card-projet h2 {
+    text-align: center;
+}
+
+.card-projet span {
+    font-weight: bolder;
+    font-size: 20px;
+    float: left;
+    color: #00a58a;
+    display: flex;
+}
+
+.card-projet:hover {
+    border: 1px solid #00a58a;
+}
+
+.card-projet p {
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.cover {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    background-color: #2b2a33;
+    padding: 15px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+.link:hover {
+    background-color: rgba(0, 165, 138, 0.2);
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+}
+
+footer {
+    border: 2px solid #1f1e1f;
+    margin-top: 140px;
+    text-align: center;
+    padding: 50px;
+    animation: fadeInUp 1s ease-out 1.6s backwards;
+}
+
+footer p {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main-content {
+        height: auto;
+        padding: 20px;
+        gap: 50px;
+    }
+
+    .yes {
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+    }
+
+    .technologies-container,
+    .skills-container {
+        width: 90%;
+        max-width: none;
+    }
+
+    .card {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .navigation {
+        justify-content: center;
+    }
+
+    .main-content h1 {
+        font-size: 30px;
+    }
+
+    .image-display {
+        height: auto;
+        margin: 30px auto;
+    }
+
+    .skills-header h1 {
+        font-size: 35px;
+    }
+
+    .card-projet {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .navigation {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .greeting-message {
+        width: auto;
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .main-content h1 {
+        font-size: 25px;
+        padding: 10px;
+    }
+
+    .skills-header h1 {
+        font-size: 28px;
+    }
+
+    .technologies-container,
+    .skills-container {
+        width: 100%;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .card-projet {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .link {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    footer {
+        padding: 30px;
+    }
+
+    footer p {
+        font-size: 16px;
+    }
+}
