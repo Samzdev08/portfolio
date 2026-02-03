@@ -289,13 +289,11 @@ a {
     transform: translateX(-50%);
     display: flex;
     justify-content: center;
-    animation: float 3s ease-in-out infinite;
 }
 
 .decoration img {
     width: 15px;
     cursor: none;
-    animation: pulse 2s ease-in-out infinite;
 }
 
 .main-content {
@@ -379,10 +377,6 @@ a {
     filter: drop-shadow(0 0 20px rgba(0, 165, 138, 0.3));
 }
 
-.image-display img:hover {
-    transform: scale(1.05) rotate(2deg);
-    filter: drop-shadow(0 0 30px rgba(0, 165, 138, 0.5));
-}
 
 .skills-section {
     position: relative;
@@ -455,12 +449,7 @@ a {
     animation-delay: 1.5s;
 }
 
-.technologies-container:hover,
-.skills-container:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 40px rgba(0, 165, 138, 0.3);
-    animation: borderGlow 2s ease-in-out infinite;
-}
+
 
 .technologies-container h2,
 .skills-container h2 {

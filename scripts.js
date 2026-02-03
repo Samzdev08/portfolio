@@ -1,5 +1,5 @@
-import * as THREE from './node_modules/three/build/three.module.js';
-import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const container = document.querySelector('.image-display');
 
@@ -60,14 +60,14 @@ window.addEventListener('scroll', function () {
         techContainer.classList.add('active-container');
         skillsContainer.classList.add('active-container');
 
-        document.querySelectorAll('.technology-item').forEach(item =>{
+        document.querySelectorAll('.technology-item').forEach(item => {
             item.classList.add('active-item');
-            
+
         })
         document.querySelectorAll('.skill-item').forEach(item => {
             item.classList.add('active-item');
         });
-        
+
 
     }
 })
