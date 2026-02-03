@@ -9,7 +9,7 @@ scene.background = new THREE.Color(0x161616);
 const sizes = {
     width: container.clientWidth,
     height: container.clientHeight
-};
+}
 
 const camera = new THREE.PerspectiveCamera(10, sizes.width / sizes.height, 0.1, 1000);
 camera.position.z = 10.5;
