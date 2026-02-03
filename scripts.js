@@ -49,8 +49,39 @@ function animate(time) {
 
 requestAnimationFrame(animate);
 
+const techContainer = document.querySelector('.technologies-container');
+const skillsContainer = document.querySelector('.skills-container');
 
 
+window.addEventListener('scroll', function () {
+
+    if (window.scrollY > 500) {
+
+        techContainer.classList.add('active-container');
+        skillsContainer.classList.add('active-container');
+
+        document.querySelectorAll('.technology-item').forEach(item =>{
+            item.classList.add('active-item');
+            
+        })
+        document.querySelectorAll('.skill-item').forEach(item => {
+            item.classList.add('active-item');
+        });
+        
+
+    }
+})
+
+const cardProjet = document.querySelector('.card-projet');
+
+window.addEventListener('scroll', function () {
+
+    if (window.scrollY > 1000) {
+
+        cardProjet.classList.add('active-card');
+
+    }
+})
 
 
 window.addEventListener('resize', () => {
