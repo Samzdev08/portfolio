@@ -93,3 +93,16 @@ window.addEventListener('resize', () => {
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+
+document.querySelectorAll('.card-projet').forEach(card => {
+    const link = card.querySelector('.link a');
+
+    if (!link) return;
+
+    card.addEventListener('click', (e) => {
+        // Si le clic est déjà sur le <a>, on laisse faire le comportement natif du lien
+        if (e.target.closest('a')) return;
+
+        window.open(link.href, '_blank');
+    });
+});
