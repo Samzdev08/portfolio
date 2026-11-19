@@ -1068,12 +1068,12 @@ a {
     border: 1px solid #00a58a;
 }
 
+/* Pied de page sobre : pas d'animation */
 footer {
-    border-top: 2px solid #1f1e1f;
-    margin-top: 140px;
+    border-top: 1px solid #2b2a33;
+    margin-top: 80px;
     text-align: center;
-    padding: 50px 20px;
-    animation: fadeInUp 1s ease-out 2s backwards;
+    padding: 28px 20px;
     position: relative;
 }
 
@@ -1086,13 +1086,11 @@ footer::before {
     width: 200px;
     height: 2px;
     background: linear-gradient(90deg, transparent, #00a58a, transparent);
-    animation: shimmer 3s linear infinite;
 }
 
 footer p {
-    font-size: clamp(16px, 3vw, 20px);
-    font-weight: bold;
-    animation: pulse 3s ease-in-out infinite;
+    font-size: 14px;
+    color: #a7a7a7;
 }
 
 @media (max-width: 1024px) {
@@ -1208,8 +1206,8 @@ footer p {
     }
 
     footer {
-        margin-top: 80px;
-        padding: 40px 20px;
+        margin-top: 60px;
+        padding: 24px 20px;
     }
 }
 
@@ -1309,8 +1307,12 @@ footer p {
     }
 
     footer {
-        margin-top: 60px;
-        padding: 30px 15px;
+        margin-top: 50px;
+        padding: 22px 15px;
+    }
+
+    footer p {
+        font-size: 13px;
     }
 }
 
