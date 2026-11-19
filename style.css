@@ -307,7 +307,7 @@ a {
     align-items: center;
     min-height: 100vh;
     flex-direction: column;
-    gap: 80px;
+    gap: 40px;
 }
 
 .greeting-message {
@@ -340,8 +340,8 @@ a {
     width: 100%;
     max-width: 100%;
     height: auto;
-    min-height: 300px;
-    margin: 50px auto;
+    min-height: 460px;
+    margin: 30px auto;
     animation: rotate 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -1017,7 +1017,7 @@ footer p {
     }
 
     .image-display {
-        min-height: 250px;
+        min-height: 400px;
     }
 
     .card {
@@ -1064,8 +1064,8 @@ footer p {
     }
 
     .image-display {
-        min-height: 200px;
-        margin: 30px auto;
+        min-height: 340px;
+        margin: 20px auto;
     }
 
     .skills-section {
@@ -1139,8 +1139,8 @@ footer p {
     }
 
     .image-display {
-        min-height: 150px;
-        margin: 20px auto;
+        min-height: 280px;
+        margin: 10px auto;
     }
 
     .skills-section {

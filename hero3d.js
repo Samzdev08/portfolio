@@ -20,8 +20,20 @@ const sizes = {
 };
 
 const camera = new THREE.PerspectiveCamera(10, sizes.width / sizes.height, 0.1, 1000);
-camera.position.z = 10.5;
-camera.position.y = 10;
+const CAMERA_DIR = new THREE.Vector3(0, 10, 10.5).normalize();
+const BASE_DISTANCE = Math.hypot(10, 10.5);
+const SCENE_WIDTH = 2.9; // largeur de l'anneau + marge, en unités 3D
+
+// Sur écran étroit (mobile), la caméra recule pour que l'anneau ne soit pas coupé
+function fitCamera() {
+    camera.aspect = sizes.width / sizes.height;
+    const visibleHeight = 2 * BASE_DISTANCE * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const visibleWidth = visibleHeight * camera.aspect;
+    const distance = BASE_DISTANCE * Math.max(1, SCENE_WIDTH / visibleWidth);
+    camera.position.copy(CAMERA_DIR).multiplyScalar(distance);
+    camera.updateProjectionMatrix();
+}
+fitCamera();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(sizes.width, sizes.height);
@@ -38,7 +50,7 @@ const globe = new THREE.Group();
 scene.add(globe);
 
 // 1. Maillage géodésique (icosaèdre subdivisé) en fil de fer
-const geodesic = new THREE.IcosahedronGeometry(0.9, 3);
+const geodesic = new THREE.IcosahedronGeometry(1, 3);
 const wireframe = new THREE.LineSegments(
     new THREE.WireframeGeometry(geodesic),
     new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.6 })
@@ -48,20 +60,20 @@ globe.add(wireframe);
 // 2. Points lumineux sur les sommets
 const points = new THREE.Points(
     geodesic,
-    new THREE.PointsMaterial({ color: ACCENT_LIGHT, size: 0.05, transparent: true, opacity: 1 })
+    new THREE.PointsMaterial({ color: ACCENT_LIGHT, size: 0.055, transparent: true, opacity: 1 })
 );
 globe.add(points);
 
 // 3. Noyau sombre : masque les lignes de l'arrière pour donner du relief
 const core = new THREE.Mesh(
-    new THREE.SphereGeometry(0.88, 48, 48),
+    new THREE.SphereGeometry(0.98, 48, 48),
     new THREE.MeshBasicMaterial({ color: 0x161616, transparent: true, opacity: 0.6 })
 );
 core.renderOrder = 1; // dessiné après les lignes : celles de l'arrière sont atténuées, pas effacées
 globe.add(core);
 
 // 4. Anneau fin incliné autour de la sphère
-const ringCurve = new THREE.EllipseCurve(0, 0, 1.18, 1.18, 0, Math.PI * 2);
+const ringCurve = new THREE.EllipseCurve(0, 0, 1.3, 1.3, 0, Math.PI * 2);
 const ring = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(ringCurve.getPoints(160)),
     new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })
@@ -126,8 +138,7 @@ window.addEventListener('resize', () => {
     sizes.width = container.clientWidth;
     sizes.height = container.clientHeight;
 
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
+    fitCamera();
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
