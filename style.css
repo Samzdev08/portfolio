@@ -1250,6 +1250,55 @@ footer p {
     }
 }
 
+/* --- Compétences à la surface de la sphère 3D (positions calculées en JS) --- */
+.image-display {
+    position: relative;
+}
+
+.globe-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.globe-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #e0e0e0;
+    background-color: rgba(31, 30, 31, 0.85);
+    border: 1px solid #2b2a33;
+    border-radius: 20px;
+    pointer-events: auto;
+    cursor: default;
+    user-select: none;
+    will-change: transform, opacity;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.globe-label:hover {
+    color: #fff;
+    background-color: #00a58a;
+    border-color: #00c9a7;
+}
+
+/* Étiquettes passées derrière le globe : non cliquables */
+.globe-label.is-back {
+    pointer-events: none;
+}
+
+@media (max-width: 480px) {
+    .globe-label {
+        font-size: 11px;
+        padding: 2px 8px;
+    }
+}
+
 /* --- En-tête collé en haut au scroll --- */
 /* Hauteur constante : seul l'aspect change au scroll (sinon la page "saute") */
 .header {

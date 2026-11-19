@@ -8,8 +8,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // Effets interactifs (à comparer, on n'en gardera qu'un) — choix par l'URL :
 //   ?effet=1  Suit la souris : le globe s'incline vers le curseur, les sommets proches s'allument
 //   ?effet=2  Déformation : le maillage s'étire autour du curseur et revient comme un ressort
-//   ?effet=3  Onde au clic : un clic envoie une onde lumineuse + accélère la rotation (défaut)
-const EFFECT = new URLSearchParams(location.search).get('effet') || '3';
+//   ?effet=3  Onde au clic : un clic envoie une onde lumineuse + accélère la rotation
+//   ?effet=4  Compétences : les technos tournent à la surface du globe (défaut)
+const EFFECT = new URLSearchParams(location.search).get('effet') || '4';
 
 const container = document.querySelector('.image-display');
 
@@ -404,7 +405,77 @@ if (EFFECT === '3') {
     });
 }
 
-const updateEffect = { '1': updateFollow, '2': updateDeform, '3': updateWave }[EFFECT] || updateWave;
+// =========================================================
+// Effet 4 : compétences à la surface du globe
+// =========================================================
+const SKILLS = [
+    'ESP32', 'STM32', 'Arduino', 'C', 'C++', 'Python', 'JavaScript', 'TypeScript',
+    'React', 'Node.js', 'Three.js', 'PHP', 'SQL', 'Docker', 'Git', 'Linux'
+];
+const LABEL_RADIUS = 1.12;     // juste au-dessus de la surface
+const HOVER_SLOWDOWN = 0.15;   // vitesse de rotation quand une compétence est survolée
+
+const labels = [];             // { el, local: Vector3 }
+let hoveredLabels = 0;
+let labelSlowdown = 1;         // 1 = vitesse normale
+
+function createSkillLabels() {
+    const layer = document.createElement('div');
+    layer.className = 'globe-labels';
+    container.appendChild(layer);
+
+    // Répartition uniforme sur la sphère (spirale de Fibonacci)
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    SKILLS.forEach((name, i) => {
+        const y = 1 - (i / (SKILLS.length - 1)) * 2 * 0.85; // évite les pôles exacts
+        const r = Math.sqrt(1 - y * y);
+        const theta = golden * i;
+        const local = new THREE.Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r)
+            .multiplyScalar(LABEL_RADIUS);
+
+        const el = document.createElement('span');
+        el.className = 'globe-label';
+        el.textContent = name;
+        el.addEventListener('pointerenter', () => { hoveredLabels++; });
+        el.addEventListener('pointerleave', () => { hoveredLabels = Math.max(0, hoveredLabels - 1); });
+        layer.appendChild(el);
+
+        labels.push({ el, local });
+    });
+}
+
+const labelWorld = new THREE.Vector3();
+const labelNormal = new THREE.Vector3();
+
+function updateLabels(delta) {
+    // Ralentit en douceur quand une compétence est survolée
+    const targetSlowdown = hoveredLabels > 0 ? HOVER_SLOWDOWN : 1;
+    labelSlowdown += (targetSlowdown - labelSlowdown) * Math.min(1, delta * 4);
+
+    scene.updateMatrixWorld();
+    toCamera.copy(camera.position).normalize();
+
+    for (const label of labels) {
+        labelWorld.copy(label.local).applyMatrix4(globe.matrixWorld);
+        labelNormal.copy(labelWorld).sub(tilt.position).normalize();
+        const facing = labelNormal.dot(toCamera); // 1 = face à nous, -1 = derrière
+
+        labelWorld.project(camera);
+        const x = (labelWorld.x + 1) / 2 * sizes.width;
+        const y = (1 - labelWorld.y) / 2 * sizes.height;
+
+        const front = facing > 0.05;
+        const opacity = front ? 0.45 + 0.55 * facing : Math.max(0.08, 0.2 + facing * 0.2);
+        label.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
+        label.el.style.opacity = opacity.toFixed(2);
+        label.el.style.zIndex = String(Math.round((facing + 1) * 100));
+        label.el.classList.toggle('is-back', !front);
+    }
+}
+
+if (EFFECT === '4') createSkillLabels();
+
+const updateEffect = { '1': updateFollow, '2': updateDeform, '3': updateWave, '4': updateLabels }[EFFECT] || updateLabels;
 
 // ---------- Animation continue ----------
 const clock = new THREE.Clock();
@@ -414,7 +485,7 @@ function animate() {
     const delta = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
-    globe.rotation.y += 0.18 * speed * (1 + spinBoost) * delta;
+    globe.rotation.y += 0.18 * speed * (1 + spinBoost) * labelSlowdown * delta;
     globe.rotation.x = 0.25 + Math.sin(t * 0.3) * 0.08 * speed;
     ring.rotation.z -= 0.1 * speed * delta;
 
