@@ -1,100 +1,34 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// ---------- Apparition des éléments au scroll ----------
+// (remplace les anciens seuils fixes scrollY > 500 / > 1000)
+const revealTargets = [
+    ['.technologies-container', 'active-container'],
+    ['.technology-item', 'active-item'],
+    ['.card-projet', 'active-card'],
+    ['.reveal', 'is-visible'],
+];
 
-const container = document.querySelector('.image-display');
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x161616);
-
-const sizes = {
-    width: container.clientWidth,
-    height: container.clientHeight
-}
-
-const camera = new THREE.PerspectiveCamera(10, sizes.width / sizes.height, 0.1, 1000);
-camera.position.z = 10.5;
-camera.position.y = 10;
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-container.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableZoom = false;
-controls.enableDamping = true;
-
-const geometry = new THREE.SphereGeometry(1, 32, 32);
-const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-const sphere = new THREE.Mesh(geometry, material);
-scene.add(sphere);
-
-let startTime = null;
-const duration = 3000;
-
-function animate(time) {
-    if (startTime === null) startTime = time;
-
-    const elapsedTime = time - startTime;
-
-    if (elapsedTime < duration) {
-        sphere.rotation.x += 0.02;
-        sphere.rotation.y += 0.01;
-    }
-
-    controls.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-}
-
-requestAnimationFrame(animate);
-
-const techContainer = document.querySelector('.technologies-container');
-const skillsContainer = document.querySelector('.skills-container');
-
-
-window.addEventListener('scroll', function () {
-
-    if (window.scrollY > 500) {
-
-        techContainer.classList.add('active-container');
-        skillsContainer.classList.add('active-container');
-
-        document.querySelectorAll('.technology-item').forEach(item => {
-            item.classList.add('active-item');
-
-        })
-        document.querySelectorAll('.skill-item').forEach(item => {
-            item.classList.add('active-item');
+if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add(entry.target.dataset.revealClass);
+            observer.unobserve(entry.target);
         });
+    }, { rootMargin: '0px 0px -8% 0px' });
 
+    revealTargets.forEach(([selector, className]) => {
+        document.querySelectorAll(selector).forEach(el => {
+            el.dataset.revealClass = className;
+            revealObserver.observe(el);
+        });
+    });
+} else {
+    revealTargets.forEach(([selector, className]) => {
+        document.querySelectorAll(selector).forEach(el => el.classList.add(className));
+    });
+}
 
-    }
-})
-
-const cardProjet = document.querySelector('.card-projet');
-
-window.addEventListener('scroll', function () {
-
-    if (window.scrollY > 1000) {
-
-        cardProjet.classList.add('active-card');
-
-    }
-})
-
-
-window.addEventListener('resize', () => {
-    sizes.width = container.clientWidth;
-    sizes.height = container.clientHeight;
-
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
-
-// Lien de navigation actif selon la section visible (style .navigation a.active)
+// ---------- Lien de navigation actif selon la section visible ----------
 const navLinks = document.querySelectorAll('.navigation a');
 
 const sectionObserver = new IntersectionObserver((entries) => {
@@ -118,19 +52,39 @@ navLinks.forEach(link => {
     sectionObserver.observe(section);
 });
 
-// Année du footer
-const annee = document.getElementById('annee');
-if (annee) annee.textContent = new Date().getFullYear();
+// ---------- Filtre des projets ----------
+const filterButtons = document.querySelectorAll('.filter-btn');
 
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+
+        filterButtons.forEach(b => {
+            const isActive = b === button;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-pressed', isActive);
+        });
+
+        document.querySelectorAll('.card-projet').forEach(card => {
+            card.hidden = filter !== 'all' && card.dataset.category !== filter;
+            // Les cartes réaffichées doivent être visibles même si elles n'étaient pas encore apparues
+            if (!card.hidden) card.classList.add('active-card');
+        });
+    });
+});
+
+// ---------- Clic sur une carte = ouvre son premier lien ----------
 document.querySelectorAll('.card-projet').forEach(card => {
-    const link = card.querySelector('.link a');
-
+    const link = card.querySelector('a.link');
     if (!link) return;
 
     card.addEventListener('click', (e) => {
-        // Si le clic est déjà sur le <a>, on laisse faire le comportement natif du lien
+        // Si le clic est déjà sur un lien, on laisse faire le comportement natif
         if (e.target.closest('a')) return;
-
-        window.open(link.href, '_blank');
+        window.open(link.href, '_blank', 'noopener');
     });
 });
+
+// ---------- Année du footer ----------
+const annee = document.getElementById('annee');
+if (annee) annee.textContent = new Date().getFullYear();

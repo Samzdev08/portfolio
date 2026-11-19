@@ -507,19 +507,11 @@ a {
     height: 200px;
 }
 
-.technology-item:nth-child(1) { animation-delay: 1.8s; }
-.technology-item:nth-child(2) { animation-delay: 1.9s; }
-.technology-item:nth-child(3) { animation-delay: 2s; }
-.technology-item:nth-child(4) { animation-delay: 2.1s; }
-.technology-item:nth-child(5) { animation-delay: 2.2s; }
-.technology-item:nth-child(6) { animation-delay: 2.3s; }
-
-.skill-item:nth-child(1) { animation-delay: 1.8s; }
-.skill-item:nth-child(2) { animation-delay: 1.9s; }
-.skill-item:nth-child(3) { animation-delay: 2s; }
-.skill-item:nth-child(4) { animation-delay: 2.1s; }
-.skill-item:nth-child(5) { animation-delay: 2.2s; }
-.skill-item:nth-child(6) { animation-delay: 2.3s; }
+/* Délai en cascade, quel que soit le nombre d'icônes (style="--i:N") */
+.technology-item,
+.skill-item {
+    animation-delay: calc(0.2s + var(--i, 0) * 0.05s);
+}
 
 .technology-item img,
 .skill-item img {
@@ -616,12 +608,9 @@ a {
     animation: rotateIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) backwards;
 }
 
-.card-projet:nth-child(1) { animation-delay: 1.7s; }
-.card-projet:nth-child(2) { animation-delay: 1.9s; }
-.card-projet:nth-child(3) { animation-delay: 2.1s; }
-.card-projet:nth-child(4) { animation-delay: 2.3s; }
-.card-projet:nth-child(5) { animation-delay: 2.5s; }
-.card-projet:nth-child(6) { animation-delay: 2.7s; }
+.card-projet {
+    animation-delay: calc(var(--i, 0) * 0.08s);
+}
 
 .card-projet h2 {
     text-align: center;
@@ -634,7 +623,7 @@ a {
     transform: scale(1.05);
 }
 
-.card-projet span {
+.card-projet .date {
     font-weight: bolder;
     font-size: 20px;
     color: #00a58a;
@@ -642,7 +631,7 @@ a {
     transition: all 0.3s ease;
 }
 
-.card-projet:hover span {
+.card-projet:hover .date {
     transform: translateX(5px);
 }
 
@@ -681,7 +670,6 @@ a {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: auto;
     background-color: #2b2a33;
     padding: 15px;
     border-radius: 10px;
@@ -729,6 +717,350 @@ a {
 .link span {
     position: relative;
     z-index: 1;
+}
+
+/* =========================================================
+   Ajouts mise à jour 2026 (mêmes couleurs, polices et animations)
+   ========================================================= */
+
+/* --- Apparition au scroll (masqué seulement si le JS tourne) --- */
+.js .technologies-container:not(.active-container),
+.js .technology-item:not(.active-item),
+.js .card-projet:not(.active-card),
+.js .reveal:not(.is-visible) {
+    opacity: 0;
+}
+
+.technologies-container.active-container {
+    animation-delay: 0.1s;
+}
+
+.reveal.is-visible {
+    animation: fadeInUp 0.9s ease-out backwards;
+}
+
+/* --- Sections génériques (même structure que Compétences / Projets) --- */
+.section {
+    border-top: 2px solid #2b2a33;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    width: 100%;
+    padding: 60px 20px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: clamp(30px, 6vw, 45px);
+    padding: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00a58a, transparent);
+    animation: shimmer 3s linear infinite;
+}
+
+/* --- À propos --- */
+.about-card {
+    max-width: 700px;
+    width: 100%;
+    background-color: #1f1e1f;
+    border: 1px solid #00a58a;
+    border-radius: 10px;
+    padding: 35px 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.about-card strong {
+    color: #00c9a7;
+}
+
+.pills {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.pills .greeting-message {
+    padding: 10px 20px;
+    font-size: 14px;
+    animation: none;
+}
+
+/* --- Compétences : 4 blocs en grille 2 x 2 --- */
+.yes .technologies-container {
+    flex: 1 1 calc(50% - 30px);
+    max-width: 650px;
+}
+
+.technology-item {
+    flex-direction: column;
+    gap: 8px;
+    min-width: 85px;
+}
+
+.tech-label {
+    font-size: 13px;
+    color: #a7a7a7;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+}
+
+.technology-item:hover .tech-label {
+    color: #fff;
+}
+
+.tag-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 10px 10px;
+}
+
+.technology-item.tag-item {
+    margin-top: 0;
+    min-width: 0;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #e0e0e0;
+}
+
+/* --- Projets : filtre --- */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: -20px;
+}
+
+.filter-btn {
+    font: inherit;
+    font-size: 15px;
+    font-weight: bold;
+    color: #a7a7a7;
+    background-color: #2b2a33;
+    border: 1px solid transparent;
+    border-radius: 40px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-btn:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 165, 138, 0.3);
+}
+
+.filter-btn.active {
+    color: #fff;
+    border-color: #00a58a;
+    animation: borderGlow 3s ease-in-out infinite;
+}
+
+.filter-btn:focus-visible {
+    outline: 2px solid #00c9a7;
+    outline-offset: 3px;
+}
+
+/* --- Projets : carte --- */
+.card-projet[hidden] {
+    display: none;
+}
+
+.card-projet:not(:has(.link)) {
+    cursor: default;
+}
+
+.cover-wrap {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.cover-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #2b2a33;
+    color: #a7a7a7;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: rgba(0, 165, 138, 0.2);
+    color: #00a58a;
+    border: 1px solid rgba(0, 165, 138, 0.4);
+    backdrop-filter: blur(6px);
+}
+
+.badge-progress {
+    background-color: rgba(22, 22, 22, 0.75);
+    color: #00c9a7;
+}
+
+.tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+
+.tags li {
+    background-color: #2b2a33;
+    color: #e0e0e0;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.card-links {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.card-links .link {
+    flex: 1;
+}
+
+/* --- Parcours : frise verticale --- */
+.timeline {
+    list-style: none;
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background-color: #2b2a33;
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    background-color: #1f1e1f;
+    border-radius: 10px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-item:nth-child(odd) {
+    margin-right: auto;
+    left: -30px;
+    text-align: right;
+}
+
+.timeline-item:nth-child(even) {
+    margin-left: auto;
+    left: 30px;
+}
+
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    top: 26px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #00a58a;
+    box-shadow: 0 0 10px rgba(0, 165, 138, 0.6);
+}
+
+.timeline-item:nth-child(odd)::after {
+    right: -37px;
+}
+
+.timeline-item:nth-child(even)::after {
+    left: -37px;
+}
+
+.timeline-item:hover {
+    box-shadow: 0 10px 25px rgba(0, 165, 138, 0.2);
+    transform: translateY(-3px);
+}
+
+.timeline-item:nth-child(odd).is-visible {
+    animation: fadeInLeft 0.9s ease-out backwards;
+}
+
+.timeline-item:nth-child(even).is-visible {
+    animation: fadeInRight 0.9s ease-out backwards;
+}
+
+.timeline-date {
+    color: #00a58a;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.timeline-item h3 {
+    font-size: clamp(16px, 2.5vw, 19px);
+    margin: 4px 0 6px;
+}
+
+.timeline-item p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+}
+
+/* --- Contact --- */
+.contact-intro {
+    color: #a7a7a7;
+    text-align: center;
+    margin-top: -20px;
+}
+
+.contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.contact-links .link {
+    min-width: 170px;
+    border: 1px solid #00a58a;
 }
 
 footer {
@@ -1014,6 +1346,79 @@ footer p {
 
     .cover {
         height: 130px;
+    }
+}
+
+/* --- Responsive des ajouts --- */
+/* Avec 6 liens, la nav atteint le centre de l'en-tête : on masque la décoration centrale */
+@media (max-width: 1500px) {
+    .decoration {
+        display: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .yes .technologies-container {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: 40px 15px;
+        gap: 40px;
+    }
+
+    .about-card {
+        padding: 25px 18px;
+    }
+
+    .timeline::before {
+        left: 10px;
+        transform: none;
+    }
+
+    .timeline-item,
+    .timeline-item:nth-child(odd),
+    .timeline-item:nth-child(even) {
+        width: auto;
+        margin-left: 40px;
+        margin-right: 0;
+        left: 0;
+        text-align: left;
+    }
+
+    .timeline-item:nth-child(odd)::after,
+    .timeline-item:nth-child(even)::after {
+        left: -36px;
+        right: auto;
+    }
+
+    .timeline-item:nth-child(odd).is-visible {
+        animation-name: fadeInRight;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-btn {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .technology-item {
+        min-width: 70px;
+    }
+
+    .tech-label {
+        font-size: 12px;
+    }
+
+    .card-links {
+        flex-direction: column;
+    }
+
+    .timeline-item {
+        padding: 16px 18px;
     }
 }
 
