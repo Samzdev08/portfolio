@@ -215,14 +215,8 @@ a {
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: scaleIn 0.8s ease-out 0.3s backwards;
-}
-
-.logo-container img:hover {
-    transform: scale(1.15) rotate(5deg);
-    box-shadow: 0 0 20px rgba(0, 165, 138, 0.6);
+    box-shadow: 0 0 0 1px #2b2a33;
+    animation: fadeIn 0.6s ease-out 0.2s backwards;
 }
 
 .logo-container span {
@@ -272,9 +266,7 @@ a {
 }
 
 .navigation a:hover {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
     color: #fff;
-    transform: translateY(-2px);
 }
 
 .navigation a.active {
@@ -289,7 +281,6 @@ a {
     width: 100%;
     height: 2px;
     background: #00a58a;
-    animation: glow 2s ease-in-out infinite;
 }
 
 .decoration {
@@ -327,29 +318,7 @@ a {
     font-weight: bold;
     background-color: #2b2a33;
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: scaleIn 1s ease-out 0.6s backwards;
-    position: relative;
-    overflow: hidden;
-}
-
-.greeting-message::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.6s;
-}
-
-.greeting-message:hover::before {
-    left: 100%;
-}
-
-.greeting-message:hover {
-    transform: scale(1.15) translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 165, 138, 0.3);
+    animation: fadeInUp 0.8s ease-out 0.3s backwards;
 }
 
 .main-content h1 {
@@ -361,9 +330,7 @@ a {
 }
 
 .main-content h1 span {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
     display: inline-block;
-    animation: pulse 3s ease-in-out infinite;
 }
 
 .image-display {
@@ -416,10 +383,10 @@ a {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60%;
+    width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, transparent, #00a58a, transparent);
-    animation: shimmer 3s linear infinite;
+    border-radius: 2px;
+    background: #00a58a;
 }
 
 .yes {
@@ -477,7 +444,7 @@ a {
 }
 
 .active-item {
-    animation: iconZoomIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation: fadeInUp 0.6s ease-out backwards;
 }
 
 .technology-item,
@@ -486,33 +453,13 @@ a {
     border-radius: 10px;
     background-color: #2b2a33;
     padding: 15px;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease, transform 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 60px;
     position: relative;
-    overflow: hidden;
-}
-
-.technology-item::before,
-.skill-item::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(0, 165, 138, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.technology-item:hover::before,
-.skill-item:hover::before {
-    width: 200px;
-    height: 200px;
 }
 
 /* Délai en cascade, quel que soit le nombre d'icônes (style="--i:N") */
@@ -533,14 +480,8 @@ a {
 
 .skill-item:hover,
 .technology-item:hover {
-    background-color: #6a6a6a;
-    transform: scale(1.15) translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 165, 138, 0.3);
-}
-
-.skill-item:hover img,
-.technology-item:hover img {
-    transform: scale(1.2) rotate(5deg);
+    border-color: #00a58a;
+    transform: translateY(-3px);
 }
 
 .projects-container {
@@ -566,9 +507,10 @@ a {
     bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50%;
+    width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, transparent, #00a58a, transparent);
+    border-radius: 2px;
+    background: #00a58a;
 }
 
 .card {
@@ -592,28 +534,13 @@ a {
     flex-direction: column;
     cursor: pointer;
     gap: 15px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #2b2a33;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
-    overflow: hidden;
-}
-
-.card-projet::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 165, 138, 0.1), transparent);
-    transition: left 0.6s;
-}
-
-.card-projet:hover::before {
-    left: 100%;
 }
 
 .active-card {
-    animation: rotateIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation: fadeInUp 0.7s ease-out backwards;
 }
 
 .card-projet {
@@ -627,8 +554,7 @@ a {
 }
 
 .card-projet:hover h2 {
-    color: #00a58a;
-    transform: scale(1.05);
+    color: #00c9a7;
 }
 
 .card-projet .date {
@@ -639,14 +565,12 @@ a {
     transition: all 0.3s ease;
 }
 
-.card-projet:hover .date {
-    transform: translateX(5px);
-}
+
 
 .card-projet:hover {
-    border: 1px solid #00a58a;
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 165, 138, 0.3);
+    border-color: #00a58a;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
 }
 
 .card-projet p {
@@ -668,10 +592,7 @@ a {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card-projet:hover .cover {
-    transform: scale(1.05);
-    filter: brightness(1.1);
-}
+
 
 .link {
     display: flex;
@@ -681,33 +602,14 @@ a {
     background-color: #2b2a33;
     padding: 15px;
     border-radius: 10px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
     position: relative;
-    overflow: hidden;
-}
-
-.link::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(0, 165, 138, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.link:hover::before {
-    width: 300px;
-    height: 300px;
 }
 
 .link:hover {
-    background-color: rgba(0, 165, 138, 0.2);
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 165, 138, 0.3);
+    background-color: rgba(0, 165, 138, 0.15);
+    border-color: #00a58a;
 }
 
 .icon {
@@ -718,9 +620,7 @@ a {
     z-index: 1;
 }
 
-.link:hover .icon {
-    transform: scale(1.2) rotate(5deg);
-}
+
 
 .link span {
     position: relative;
@@ -772,10 +672,10 @@ a {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60%;
+    width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, transparent, #00a58a, transparent);
-    animation: shimmer 3s linear infinite;
+    border-radius: 2px;
+    background: #00a58a;
 }
 
 /* --- À propos --- */
@@ -877,14 +777,11 @@ a {
 
 .filter-btn:hover {
     color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 165, 138, 0.3);
 }
 
 .filter-btn.active {
     color: #fff;
     border-color: #00a58a;
-    animation: borderGlow 3s ease-in-out infinite;
 }
 
 .filter-btn:focus-visible {
@@ -1015,7 +912,7 @@ a {
     height: 14px;
     border-radius: 50%;
     background-color: #00a58a;
-    box-shadow: 0 0 10px rgba(0, 165, 138, 0.6);
+    box-shadow: 0 0 0 4px #161616;
 }
 
 .timeline-item:nth-child(odd)::after {
@@ -1026,10 +923,7 @@ a {
     left: -37px;
 }
 
-.timeline-item:hover {
-    box-shadow: 0 10px 25px rgba(0, 165, 138, 0.2);
-    transform: translateY(-3px);
-}
+
 
 .timeline-item:nth-child(odd).is-visible {
     animation: fadeInLeft 0.9s ease-out backwards;
