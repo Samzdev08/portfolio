@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMZDEV - Développeur Web</title>
+    <title>Samzdev - Développeur & Systèmes embarqués</title>
+    <meta name="description"
+        content="Portfolio de Sam (Samzdev) : développement web full-stack, systèmes embarqués (ESP32, STM32), robotique et impression 3D.">
+
+    <!-- Aperçu quand le lien est partagé -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Samzdev - Développeur & Systèmes embarqués">
+    <meta property="og:description"
+        content="Portfolio de Sam (Samzdev) : développement web full-stack, systèmes embarqués (ESP32, STM32), robotique et impression 3D.">
+    <meta property="og:url" content="https://samzdev08.github.io/portfolio/">
+    <meta property="og:image" content="https://samzdev08.github.io/portfolio/img/systeme%20solaire%20.png">
+    <!-- TODO Sam: choisir une image d'aperçu dédiée (1200x630 idéalement) -->
+
+    <!-- TODO Sam: fournir img/favicon.png, puis décommenter la ligne suivante -->
+    <!-- <link rel="icon" href="img/favicon.png" type="image/png"> -->
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,24 +26,31 @@
     <div class="main-container" id="accueil">
         <header class="header">
             <div class="logo-container">
-                <img src="img/Luffy.jpg" alt="">
+                <!-- TODO Sam: garder ou remplacer par une vraie photo -->
+                <img src="img/Luffy.jpg" alt="Photo de profil de Samzdev">
                 <span>Samzdev</span>
             </div>
             <div class="decoration">
-                <img src="img/Design sans titre(2).png" alt="">
+                <!-- Image purement décorative : alt vide volontaire, ignorée par les lecteurs d'écran -->
+                <img src="img/Design sans titre(2).png" alt="" aria-hidden="true">
             </div>
-            <nav class="navigation">
-                <li><a href="#accueil">Accueil</a></li>
-                <li><a href="#technologie">Technologie & Skills</a></li>
-                <li><a href="#projects">Projet</a></li>
+            <nav aria-label="Navigation principale">
+                <ul class="navigation">
+                    <li><a href="#accueil">Accueil</a></li>
+                    <li><a href="#apropos">À propos</a></li>
+                    <li><a href="#technologie">Compétences</a></li>
+                    <li><a href="#projects">Projets</a></li>
+                    <li><a href="#parcours">Parcours</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
             </nav>
         </header>
 
         <main class="main-content">
             <div class="greeting-message">
-                <span>Hello, I'm Sam 👋</span>
+                <span>Salut, moi c'est Sam 👋</span>
             </div>
-            <h1> <span>3nd-Year Full-Stack</span> <br>Computer Science Student | 17 Years Old</h1>
+            <h1><span>Développeur full-stack</span><br>en route vers les systèmes embarqués</h1>
             <div class="image-display"></div>
         </main>
 
@@ -42,25 +63,25 @@
                     <h2>Technologie</h2>
                     <div class="technology-icons">
                         <div class="technology-item">
-                            <img src="img/docker.svg" alt="">
+                            <img src="img/docker.svg" alt="Docker">
                         </div>
                         <div class="technology-item">
-                            <img src="img/Git_icon.svg.png" alt="">
+                            <img src="img/Git_icon.svg.png" alt="Git">
                         </div>
                         <div class="technology-item">
-                            <img src="img/mysql.svg" alt="">
+                            <img src="img/mysql.svg" alt="MySQL">
                         </div>
                         <div class="technology-item">
-                            <img src="img/PyCharm_Icon.svg.png" alt="">
+                            <img src="img/PyCharm_Icon.svg.png" alt="PyCharm">
                         </div>
                         <div class="technology-item">
-                            <img src="img/Visual_Studio_Icon_2019.svg.png" alt="">
+                            <img src="img/Visual_Studio_Icon_2019.svg.png" alt="Visual Studio">
                         </div>
                         <div class="technology-item">
-                            <img src="img/node.png" alt="">
+                            <img src="img/node.png" alt="Node.js">
                         </div>
                         <div class="technology-item">
-                            <img src="img/vscode2.svg" alt="">
+                            <img src="img/vscode2.svg" alt="VS Code">
                         </div>
                     </div>
                 </div>
@@ -69,25 +90,25 @@
                     <h2>Skills</h2>
                     <div class="skill-icons">
                         <div class="skill-item">
-                            <img src="img/c-sharp-c-icon-1822x2048-wuf3ijab.png" alt="">
+                            <img src="img/c-sharp-c-icon-1822x2048-wuf3ijab.png" alt="C#">
                         </div>
                         <div class="skill-item">
-                            <img src="img/e4f86d2200d2d35c30f7b1494e96b9595ebc2751_2_1016x1024.png" alt="">
+                            <img src="img/e4f86d2200d2d35c30f7b1494e96b9595ebc2751_2_1016x1024.png" alt="Three.js">
                         </div>
                         <div class="skill-item">
-                            <img src="img/html.png" alt="">
+                            <img src="img/html.png" alt="HTML">
                         </div>
                         <div class="skill-item">
-                            <img src="img/php.png" alt="">
+                            <img src="img/php.png" alt="PHP">
                         </div>
                         <div class="skill-item">
-                            <img src="img/css-removebg-preview.png" alt="">
+                            <img src="img/css-removebg-preview.png" alt="CSS">
                         </div>
                         <div class="skill-item">
-                            <img src="img/Unofficial_JavaScript_logo_2.svg.png" alt="">
+                            <img src="img/Unofficial_JavaScript_logo_2.svg.png" alt="JavaScript">
                         </div>
                         <div class="skill-item">
-                            <img src="img/py.png" alt="">
+                            <img src="img/py.png" alt="Python">
                         </div>
                     </div>
                 </div>
@@ -99,14 +120,14 @@
             <div class="card">
                 <div class="card-projet">
                     <h2>Systeme Solaire</h2>
-                    <img class="cover" src="img/systeme solaire .png" alt="">
+                    <img class="cover" src="img/systeme solaire .png" alt="Aperçu du projet Système solaire 3D">
                     <span>12-24</span>
                     <p>Simulation interactive du système solaire en Three.js,avec orbites animées et textures réalistes,
                         mettant en valeur mes compétences en développement 3D.
                     </p>
                     <div class="link">
                         <a href="https://samzdev08.github.io/system-solar-3d/">Ouvrir le site</a>
-                        <img class="icon" src="img/box-arrow-up-right-svgrepo-com.svg" alt="">
+                        <img class="icon" src="img/box-arrow-up-right-svgrepo-com.svg" alt="" aria-hidden="true">
                         
                     </div>
                 </div>
@@ -114,7 +135,7 @@
         </div>
 
         <footer>
-            <p>©2024 - 2025 Samzdev. Tous droits réservés</p>
+            <p>©2024 - <span id="annee">2026</span> Samzdev. Tous droits réservés</p>
         </footer>
     </div>
 

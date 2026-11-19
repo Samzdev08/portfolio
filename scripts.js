@@ -94,6 +94,34 @@ window.addEventListener('resize', () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
+// Lien de navigation actif selon la section visible (style .navigation a.active)
+const navLinks = document.querySelectorAll('.navigation a');
+
+const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.dataset.target === entry.target.dataset.section);
+        });
+    });
+}, { rootMargin: '-45% 0px -50% 0px' });
+
+navLinks.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    // #accueil englobe toute la page : on observe le hero à la place
+    const section = id === 'accueil'
+        ? document.querySelector('.main-content')
+        : document.getElementById(id);
+    if (!section) return;
+    link.dataset.target = id;
+    section.dataset.section = id;
+    sectionObserver.observe(section);
+});
+
+// Année du footer
+const annee = document.getElementById('annee');
+if (annee) annee.textContent = new Date().getFullYear();
+
 document.querySelectorAll('.card-projet').forEach(card => {
     const link = card.querySelector('.link a');
 
