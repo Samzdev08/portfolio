@@ -7,8 +7,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 //
 // Effets interactifs (à comparer, on n'en gardera qu'un) — choix par l'URL :
 //   ?effet=1  Suit la souris : le globe s'incline vers le curseur, les sommets proches s'allument
-//   ?effet=2  Déformation : le maillage gonfle vers le curseur et revient comme un ressort (défaut)
-const EFFECT = new URLSearchParams(location.search).get('effet') || '2';
+//   ?effet=2  Déformation : le maillage s'étire autour du curseur et revient comme un ressort
+//   ?effet=3  Onde au clic : un clic envoie une onde lumineuse + accélère la rotation (défaut)
+const EFFECT = new URLSearchParams(location.search).get('effet') || '3';
 
 const container = document.querySelector('.image-display');
 
@@ -310,7 +311,100 @@ function updateDeform(delta) {
     deform(points, BASE_POINT, GLOW_POINT, hit, delta);
 }
 
-const updateEffect = EFFECT === '1' ? updateFollow : updateDeform;
+// =========================================================
+// Effet 3 : onde lumineuse au clic + accélération de la rotation
+// =========================================================
+const WAVE_SPEED = 2.2;        // vitesse de l'onde (radians de sphère par seconde)
+const WAVE_WIDTH = 0.28;       // épaisseur du front d'onde (radians)
+const WAVE_LIFETIME = Math.PI / WAVE_SPEED + 0.3; // le temps de faire le tour
+const WAVE_LIFT = 0.05;        // soulèvement des sommets au passage de l'onde
+const MAX_WAVES = 4;
+const SPIN_BOOST = 3;          // accélération max de la rotation (x4 au clic)
+
+const waves = [];              // { dir: Vector3 (repère du globe), age: secondes }
+let spinBoost = 0;
+
+function launchWave(ndc) {
+    pointer.ndc.copy(ndc);
+    pointer.active = true;
+    scene.updateMatrixWorld();
+    const dir = getHitDirection();
+    if (!dir) return;
+    waves.push({ dir: dir.clone(), age: 0 });
+    if (waves.length > MAX_WAVES) waves.shift();
+    if (!reduceMotion) spinBoost = SPIN_BOOST;
+}
+
+function waveIntensity(rx, ry, rz) {
+    let intensity = 0;
+    for (const wave of waves) {
+        const dot = THREE.MathUtils.clamp(rx * wave.dir.x + ry * wave.dir.y + rz * wave.dir.z, -1, 1);
+        const angle = Math.acos(dot);                 // distance au point cliqué, sur la sphère
+        const front = wave.age * WAVE_SPEED;          // position actuelle du front d'onde
+        const k = (angle - front) / WAVE_WIDTH;
+        const fade = 1 - wave.age / WAVE_LIFETIME;    // l'onde s'éteint en faisant le tour
+        intensity = Math.max(intensity, Math.exp(-k * k) * fade);
+    }
+    return intensity;
+}
+
+function ripple(object, baseColor, glowColor) {
+    const geometry = object.geometry;
+    const position = geometry.attributes.position;
+    const color = geometry.attributes.color;
+    const { rest, glow } = geometry.userData;
+
+    let changed = false;
+    for (let i = 0; i < position.count; i++) {
+        const rx = rest[i * 3], ry = rest[i * 3 + 1], rz = rest[i * 3 + 2];
+        const intensity = waves.length ? waveIntensity(rx, ry, rz) : 0;
+        if (intensity === 0 && glow[i] === 0) continue;
+        glow[i] = intensity < 0.003 ? 0 : intensity;
+
+        const scale = 1 + WAVE_LIFT * glow[i];
+        position.setXYZ(i, rx * scale, ry * scale, rz * scale);
+        setVertexGlow(color, i, baseColor, glowColor, glow[i]);
+        changed = true;
+    }
+    if (changed) {
+        position.needsUpdate = true;
+        color.needsUpdate = true;
+    }
+}
+
+function updateWave(delta) {
+    for (const wave of waves) wave.age += delta;
+    while (waves.length && waves[0].age > WAVE_LIFETIME) waves.shift();
+    spinBoost *= Math.exp(-1.8 * delta); // la rotation ralentit en douceur
+
+    scene.updateMatrixWorld();
+    ripple(wireframe, BASE_LINE, GLOW_LINE);
+    ripple(points, BASE_POINT, GLOW_POINT);
+}
+
+if (EFFECT === '3') {
+    // Un vrai clic (pas un glisser pour faire tourner le globe) déclenche l'onde
+    const canvas = renderer.domElement;
+    const down = { x: 0, y: 0, time: 0 };
+    const clickNdc = new THREE.Vector2();
+    canvas.style.cursor = 'pointer';
+
+    canvas.addEventListener('pointerdown', (e) => {
+        down.x = e.clientX; down.y = e.clientY; down.time = performance.now();
+    });
+    canvas.addEventListener('pointerup', (e) => {
+        const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+        if (moved > 6 || performance.now() - down.time > 400) return;
+        const rect = canvas.getBoundingClientRect();
+        clickNdc.set(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        launchWave(clickNdc);
+    });
+}
+
+const updateEffect = { '1': updateFollow, '2': updateDeform, '3': updateWave }[EFFECT] || updateWave;
 
 // ---------- Animation continue ----------
 const clock = new THREE.Clock();
@@ -320,7 +414,7 @@ function animate() {
     const delta = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
-    globe.rotation.y += 0.18 * speed * delta;
+    globe.rotation.y += 0.18 * speed * (1 + spinBoost) * delta;
     globe.rotation.x = 0.25 + Math.sin(t * 0.3) * 0.08 * speed;
     ring.rotation.z -= 0.1 * speed * delta;
 
