@@ -4,7 +4,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // ---------- Sphère 3D de l'accueil ----------
 // Maillage géodésique vert + points sur les sommets + anneau incliné.
 // Rotation lente et continue, rendu en pause quand la sphère n'est pas visible.
-// Interaction : le globe s'incline vers le curseur et les sommets proches s'allument.
+//
+// Effets interactifs (à comparer, on n'en gardera qu'un) — choix par l'URL :
+//   ?effet=1  Suit la souris : le globe s'incline vers le curseur, les sommets proches s'allument
+//   ?effet=2  Déformation : le maillage gonfle vers le curseur et revient comme un ressort (défaut)
+const EFFECT = new URLSearchParams(location.search).get('effet') || '2';
 
 const container = document.querySelector('.image-display');
 
@@ -45,32 +49,41 @@ controls.enableZoom = false;
 controls.enablePan = false;
 controls.enableDamping = true;
 
-// "tilt" s'incline vers la souris ; "globe" tourne sur lui-même à l'intérieur
+// "tilt" peut s'incliner vers la souris ; "globe" tourne sur lui-même à l'intérieur
 const tilt = new THREE.Group();
 scene.add(tilt);
 
 const globe = new THREE.Group();
 tilt.add(globe);
 
-// ---------- Couleurs par sommet pour l'effet de lueur ----------
-// Base assombrie (même rendu qu'avant avec 60 % d'opacité), lueur vert menthe vive
+// ---------- Couleurs et données par sommet ----------
+// Base assombrie (même rendu qu'avec 60 % d'opacité), lueur vert menthe vive
 const BASE_LINE = new THREE.Color(ACCENT).lerp(new THREE.Color(0x161616), 0.4);
 const GLOW_LINE = new THREE.Color(0x9ffff0);
 const BASE_POINT = new THREE.Color(0x00c9a7);
 const GLOW_POINT = new THREE.Color(0xe6fffa);
 
-function addGlowColors(geometry, baseColor) {
+function prepareGeometry(geometry, baseColor) {
     const count = geometry.attributes.position.count;
     const colors = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) baseColor.toArray(colors, i * 3);
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.userData.glow = new Float32Array(count); // intensité 0..1 de chaque sommet
+    geometry.userData.glow = new Float32Array(count);      // intensité 0..1 (effet 1)
+    geometry.userData.rest = geometry.attributes.position.array.slice(); // forme au repos
+    geometry.userData.offset = new Float32Array(count);    // déplacement radial (effet 2)
+    geometry.userData.velocity = new Float32Array(count);  // vitesse du ressort (effet 2)
+}
+
+const tmpColor = new THREE.Color();
+function setVertexGlow(color, i, baseColor, glowColor, intensity) {
+    tmpColor.copy(baseColor).lerp(glowColor, intensity);
+    color.setXYZ(i, tmpColor.r, tmpColor.g, tmpColor.b);
 }
 
 // 1. Maillage géodésique (icosaèdre subdivisé) en fil de fer
 const geodesic = new THREE.IcosahedronGeometry(1, 3);
 const wireGeometry = new THREE.WireframeGeometry(geodesic);
-addGlowColors(wireGeometry, BASE_LINE);
+prepareGeometry(wireGeometry, BASE_LINE);
 const wireframe = new THREE.LineSegments(
     wireGeometry,
     new THREE.LineBasicMaterial({ vertexColors: true })
@@ -79,7 +92,7 @@ globe.add(wireframe);
 
 // 2. Points lumineux sur les sommets
 const pointGeometry = geodesic.clone();
-addGlowColors(pointGeometry, BASE_POINT);
+prepareGeometry(pointGeometry, BASE_POINT);
 const points = new THREE.Points(
     pointGeometry,
     new THREE.PointsMaterial({ vertexColors: true, size: 0.055, transparent: true, opacity: 1 })
@@ -106,11 +119,11 @@ ringPivot.rotation.z = 0.25;
 ringPivot.add(ring);
 tilt.add(ringPivot);
 
-// ---------- Suivi de la souris / du doigt ----------
+// ---------- Suivi de la souris / du doigt (commun aux effets) ----------
 const pointer = {
     active: false,
     ndc: new THREE.Vector2(10, 10), // position dans le canvas (-1..1), loin par défaut
-    tiltX: 0,                        // inclinaison visée
+    tiltX: 0,                        // inclinaison visée (effet 1)
     tiltY: 0
 };
 
@@ -121,13 +134,11 @@ window.addEventListener('pointermove', (e) => {
     const rect = renderer.domElement.getBoundingClientRect();
     pointer.active = true;
 
-    // Position dans le canvas, pour la lueur
     pointer.ndc.set(
         ((e.clientX - rect.left) / rect.width) * 2 - 1,
         -((e.clientY - rect.top) / rect.height) * 2 + 1
     );
 
-    // Position par rapport au centre du globe, pour l'inclinaison (bornée à -1..1)
     const nx = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
     const ny = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
     pointer.tiltY = THREE.MathUtils.clamp(nx, -1, 1) * MAX_TILT_Y;
@@ -147,17 +158,18 @@ window.addEventListener('blur', releasePointer);
 window.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') releasePointer(); });
 window.addEventListener('pointercancel', releasePointer);
 
-// ---------- Lueur des sommets proches du curseur ----------
-const GLOW_RADIUS = 0.4;    // rayon de la zone allumée (en unités écran)
-const GLOW_RISE = 10;       // vitesse d'allumage
-const GLOW_FADE = 2.2;      // vitesse d'extinction (traînée)
+// =========================================================
+// Effet 1 : suit la souris (inclinaison + lueur des sommets proches)
+// =========================================================
+const GLOW_RADIUS = 0.4;  // rayon de la zone allumée (en unités écran)
+const GLOW_RISE = 10;     // vitesse d'allumage
+const GLOW_FADE = 2.2;    // vitesse d'extinction (traînée)
 
 const tmp = new THREE.Vector3();
 const tmpNormal = new THREE.Vector3();
 const toCamera = new THREE.Vector3();
-const tmpColor = new THREE.Color();
 
-function updateGlow(object, baseColor, glowColor, delta) {
+function followGlow(object, baseColor, glowColor, delta) {
     const geometry = object.geometry;
     const position = geometry.attributes.position;
     const color = geometry.attributes.color;
@@ -190,12 +202,115 @@ function updateGlow(object, baseColor, glowColor, delta) {
         if (Math.abs(next - target) < 0.002) next = target;
         glow[i] = next;
 
-        tmpColor.copy(baseColor).lerp(glowColor, next);
-        color.setXYZ(i, tmpColor.r, tmpColor.g, tmpColor.b);
+        setVertexGlow(color, i, baseColor, glowColor, next);
         changed = true;
     }
     if (changed) color.needsUpdate = true;
 }
+
+function updateFollow(delta) {
+    const ease = Math.min(1, delta * 3);
+    tilt.rotation.x += (pointer.tiltX - tilt.rotation.x) * ease;
+    tilt.rotation.y += (pointer.tiltY - tilt.rotation.y) * ease;
+
+    scene.updateMatrixWorld();
+    followGlow(wireframe, BASE_LINE, GLOW_LINE, delta);
+    followGlow(points, BASE_POINT, GLOW_POINT, delta);
+}
+
+// =========================================================
+// Effet 2 : déformation élastique vers le curseur
+// =========================================================
+const REPEL_ANGLE = 0.3;                  // écartement max des sommets autour du curseur (radians)
+const BULGE_AMPLITUDE = 0.08;             // léger gonflement en plus (rayon du globe = 1)
+const BULGE_SPREAD = Math.cos(0.7);       // taille de la zone déformée (angle ~40°)
+const SPRING_STIFFNESS = 90;              // raideur du ressort
+const SPRING_DAMPING = 9;                 // amortissement (plus bas = plus de rebond)
+
+const raycaster = new THREE.Raycaster();
+const localRay = new THREE.Ray();
+const inverseMatrix = new THREE.Matrix4();
+const unitSphere = new THREE.Sphere(new THREE.Vector3(), 1);
+const hitPoint = new THREE.Vector3();
+const hitDir = new THREE.Vector3();
+
+function getHitDirection() {
+    if (!pointer.active) return null;
+    raycaster.setFromCamera(pointer.ndc, camera);
+    // Rayon exprimé dans le repère du globe (qui tourne) : la bosse reste sous le curseur
+    inverseMatrix.copy(globe.matrixWorld).invert();
+    localRay.copy(raycaster.ray).applyMatrix4(inverseMatrix);
+    if (!localRay.intersectSphere(unitSphere, hitPoint)) return null;
+    return hitDir.copy(hitPoint).normalize();
+}
+
+function deform(object, baseColor, glowColor, hit, delta) {
+    const geometry = object.geometry;
+    const position = geometry.attributes.position;
+    const color = geometry.attributes.color;
+    const { rest, offset, velocity } = geometry.userData;
+
+    let changed = false;
+    for (let i = 0; i < position.count; i++) {
+        const rx = rest[i * 3], ry = rest[i * 3 + 1], rz = rest[i * 3 + 2];
+
+        // Force de la déformation visée pour ce sommet (1 sous le curseur, 0 au bord de la zone)
+        let target = 0;
+        let dot = 0;
+        if (hit) {
+            dot = rx * hit.x + ry * hit.y + rz * hit.z; // sommets sur une sphère de rayon 1
+            if (dot > BULGE_SPREAD) {
+                let w = (dot - BULGE_SPREAD) / (1 - BULGE_SPREAD);
+                target = w * w * (3 - 2 * w); // smoothstep : bord adouci
+            }
+        }
+
+        // Ressort amorti : la surface rattrape la cible puis rebondit légèrement
+        let s = offset[i];
+        let v = velocity[i];
+        if (target === 0 && Math.abs(s) < 1e-4 && Math.abs(v) < 1e-4) {
+            if (s === 0) continue;
+            s = 0; v = 0;
+        } else {
+            v += (SPRING_STIFFNESS * (target - s) - SPRING_DAMPING * v) * delta;
+            s += v * delta;
+        }
+        offset[i] = s;
+        velocity[i] = v;
+
+        // 1. Écarte le sommet du curseur le long de la surface (effet loupe / membrane étirée)
+        let px = rx, py = ry, pz = rz;
+        if (hit && s !== 0) {
+            let tx = rx - hit.x * dot, ty = ry - hit.y * dot, tz = rz - hit.z * dot;
+            const len = Math.sqrt(tx * tx + ty * ty + tz * tz);
+            if (len > 1e-5) {
+                const a = REPEL_ANGLE * s;
+                const c = Math.cos(a), sn = Math.sin(a) / len;
+                px = rx * c + tx * sn;
+                py = ry * c + ty * sn;
+                pz = rz * c + tz * sn;
+            }
+        }
+        // 2. Léger gonflement vers l'extérieur
+        const scale = 1 + BULGE_AMPLITUDE * s;
+        position.setXYZ(i, px * scale, py * scale, pz * scale);
+        setVertexGlow(color, i, baseColor, glowColor, THREE.MathUtils.clamp(s, 0, 1) * 0.7);
+        changed = true;
+    }
+    if (changed) {
+        position.needsUpdate = true;
+        color.needsUpdate = true;
+    }
+}
+
+function updateDeform(delta) {
+    scene.updateMatrixWorld();
+    const hit = getHitDirection();
+    deform(wireframe, BASE_LINE, GLOW_LINE, hit, delta);
+    deform(points, BASE_POINT, GLOW_POINT, hit, delta);
+}
+
+const updateEffect = EFFECT === '1' ? updateFollow : updateDeform;
 
 // ---------- Animation continue ----------
 const clock = new THREE.Clock();
@@ -209,19 +324,12 @@ function animate() {
     globe.rotation.x = 0.25 + Math.sin(t * 0.3) * 0.08 * speed;
     ring.rotation.z -= 0.1 * speed * delta;
 
-    // Inclinaison amortie vers le curseur
-    const ease = Math.min(1, delta * 3);
-    tilt.rotation.x += (pointer.tiltX - tilt.rotation.x) * ease;
-    tilt.rotation.y += (pointer.tiltY - tilt.rotation.y) * ease;
-
     if (!reduceMotion) {
         // Léger flottement vertical
         tilt.position.y = Math.sin(t * 0.8) * 0.04;
     }
 
-    scene.updateMatrixWorld();
-    updateGlow(wireframe, BASE_LINE, GLOW_LINE, delta);
-    updateGlow(points, BASE_POINT, GLOW_POINT, delta);
+    updateEffect(delta);
 
     controls.update();
     renderer.render(scene, camera);
