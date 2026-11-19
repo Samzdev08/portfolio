@@ -927,15 +927,18 @@ a {
     border-radius: 20px;
     font-size: 12px;
     font-weight: bold;
-    background-color: rgba(0, 165, 138, 0.2);
-    color: #00a58a;
-    border: 1px solid rgba(0, 165, 138, 0.4);
-    backdrop-filter: blur(6px);
+    letter-spacing: 0.3px;
+    /* Fond plein : lisible sur n'importe quelle image (claire ou sombre) */
+    background-color: #00a58a;
+    color: #fff;
+    border: 1px solid #00c9a7;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .badge-progress {
-    background-color: rgba(22, 22, 22, 0.75);
+    background-color: rgba(22, 22, 22, 0.9);
     color: #00c9a7;
+    border-color: #00a58a;
 }
 
 .tags {
@@ -1351,6 +1354,30 @@ footer p {
     }
 }
 
+/* --- En-tête collé en haut au scroll --- */
+/* Hauteur constante : seul l'aspect change au scroll (sinon la page "saute") */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 18px 3%;
+    transition: background-color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    border-bottom: 1px solid transparent;
+}
+
+.header.scrolled {
+    background-color: rgba(31, 30, 31, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: #2b2a33;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* La section ciblée par la nav ne passe pas sous l'en-tête (hauteur mesurée en JS) */
+[id] {
+    scroll-margin-top: var(--header-h, 90px);
+}
+
 /* --- Responsive des ajouts --- */
 /* Avec 6 liens, la nav atteint le centre de l'en-tête : on masque la décoration centrale */
 @media (max-width: 1500px) {
@@ -1401,7 +1428,22 @@ footer p {
     }
 }
 
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 15px;
+        gap: 10px;
+    }
+}
+
 @media (max-width: 480px) {
+    /* Nav sur 2 lignes plutôt qu'en colonne : l'en-tête collé reste compact */
+    .navigation {
+        flex-direction: row;
+        justify-content: center;
+        gap: 6px 14px;
+        font-size: 14px;
+    }
+
     .filter-btn {
         font-size: 13px;
         padding: 8px 16px;

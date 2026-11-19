@@ -88,3 +88,25 @@ document.querySelectorAll('.card-projet').forEach(card => {
 // ---------- Année du footer ----------
 const annee = document.getElementById('annee');
 if (annee) annee.textContent = new Date().getFullYear();
+
+// ---------- En-tête collé : style compact au scroll + hauteur pour scroll-margin ----------
+const header = document.querySelector('.header');
+
+if (header) {
+    const updateHeaderState = () => {
+        header.classList.toggle('scrolled', window.scrollY > 10);
+    };
+    updateHeaderState();
+    window.addEventListener('scroll', updateHeaderState, { passive: true });
+
+    // La hauteur change (scroll, largeur d'écran) : on la garde à jour pour scroll-margin-top
+    const setHeaderHeight = () => {
+        document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    };
+    setHeaderHeight();
+    if ('ResizeObserver' in window) {
+        new ResizeObserver(setHeaderHeight).observe(header);
+    } else {
+        window.addEventListener('resize', setHeaderHeight);
+    }
+}
