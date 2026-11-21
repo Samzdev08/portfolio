@@ -180,16 +180,19 @@
 
                 <!-- 1. Drone -->
                 <article class="card-projet" data-category="embarque" style="--i:0">
-                    <h2>Drone (firmware de vol maison)</h2>
                     <div class="cover-wrap">
                         <!-- TODO Sam: fournir une photo -->
                         <div class="cover cover-placeholder"><span>Drone</span></div>
                         <span class="badge badge-progress">En cours</span>
                     </div>
-                    <span class="date">Nov. 2026</span>
-                    <p>Drone construit de zéro : châssis imprimé en 3D (basé sur le projet open source Flix), ESP32,
-                        gyroscope, moteurs commandés par MOSFET. Tout le firmware de vol est écrit à la main, y compris
-                        la régulation PID.</p>
+                    <div class="card-meta"><span>Embarqué</span><span class="date">Nov. 2026</span></div>
+                    <h2>Drone (firmware de vol maison)</h2>
+                    <p class="pitch">Drone construit de zéro, avec un firmware de vol entièrement écrit à la main.</p>
+                    <ul class="highlights">
+                        <li>Régulation PID codée sans bibliothèque de vol</li>
+                        <li>ESP32 + gyroscope, moteurs pilotés par MOSFET</li>
+                        <li>Châssis imprimé en 3D, basé sur le projet open source Flix</li>
+                    </ul>
                     <ul class="tags">
                         <li>ESP32</li><li>C++</li><li>PID</li><li>IMU</li><li>MOSFET</li><li>Impression 3D</li>
                     </ul>
@@ -198,16 +201,19 @@
 
                 <!-- 2. Main robotique -->
                 <article class="card-projet" data-category="embarque" style="--i:1">
-                    <h2>Main robotique à tendons</h2>
                     <div class="cover-wrap">
                         <!-- TODO Sam: fournir une photo -->
                         <div class="cover cover-placeholder"><span>Main robotique</span></div>
                         <span class="badge badge-progress">En cours</span>
                     </div>
-                    <span class="date">Oct. 2026</span>
-                    <p>Main à 5 doigts imprimée en 3D, actionnée par des servos via des tendons et pilotée par ESP32.
-                        Objectif : reproduire en temps réel les mouvements d'une main filmée par webcam, grâce à la
-                        vision par ordinateur en Python.</p>
+                    <div class="card-meta"><span>Robotique</span><span class="date">Oct. 2026</span></div>
+                    <h2>Main robotique à tendons</h2>
+                    <p class="pitch">Main à 5 doigts qui reproduit en temps réel une main filmée par webcam.</p>
+                    <ul class="highlights">
+                        <li>Doigts actionnés par servos et tendons, pilotés par ESP32</li>
+                        <li>Suivi de la main par vision par ordinateur en Python</li>
+                        <li>Pièces modélisées en CAO et imprimées en 3D</li>
+                    </ul>
                     <ul class="tags">
                         <li>ESP32</li><li>Python</li><li>Vision par ordinateur</li><li>CAO</li><li>Impression 3D</li>
                     </ul>
@@ -216,18 +222,21 @@
 
                 <!-- 3. Hub domotique -->
                 <article class="card-projet" data-category="embarque" style="--i:2">
-                    <h2>Hub domotique ESP32</h2>
                     <div class="cover-wrap">
                         <img class="cover" src="img/projects/hub-domotique.jpg"
                             alt="Boîtier du hub domotique avec écran OLED et LED verte allumée" loading="lazy">
                         <span class="badge badge-done">Terminé</span>
                     </div>
-                    <span class="date">Sept. 2026</span>
-                    <p>Contrôle d'accès : un capteur PIR détecte une présence et déclenche l'ouverture par servomoteur,
-                        avec retour LED + buzzer. Température et humidité (DHT11) affichées sur écran OLED. L'ESP32
-                        héberge un dashboard web temps réel : état de la porte, mesures et ouverture à distance.</p>
+                    <div class="card-meta"><span>Embarqué · IA</span><span class="date">Sept. 2026</span></div>
+                    <h2>Hub domotique ESP32</h2>
+                    <p class="pitch">Contrôle d'accès connecté, pilotable depuis un dashboard web ou en langage naturel.</p>
+                    <ul class="highlights">
+                        <li>Ouverture automatique par détection PIR et servomoteur</li>
+                        <li>Dashboard web embarqué : état de la porte, température, ouverture à distance</li>
+                        <li>Agent IA Python (tool use) qui permet d'interagir avec le hub en lui posant des questions</li>
+                    </ul>
                     <ul class="tags">
-                        <li>ESP32</li><li>C++</li><li>I2C</li><li>Serveur web</li><li>HTML/JS</li>
+                        <li>ESP32</li><li>C++</li><li>Serveur web</li><li>Python</li><li>Agent IA</li><li>Tool use</li>
                     </ul>
                     <div class="card-links">
                         <a class="link" href="https://github.com/Samzdev08/domotic_hub" target="_blank" rel="noopener">
@@ -239,16 +248,19 @@
 
                 <!-- 4. STM32 bare metal -->
                 <article class="card-projet" data-category="embarque" style="--i:3">
-                    <h2>Bare metal STM32</h2>
                     <div class="cover-wrap">
                         <!-- TODO Sam: fournir une photo -->
                         <div class="cover cover-placeholder"><span>STM32</span></div>
                         <span class="badge badge-progress">En cours</span>
                     </div>
-                    <span class="date">2026</span>
-                    <p>Programmation bas niveau sur Blue Pill, directement par les registres, sans HAL ni framework :
-                        GPIO, UART, SysTick, PWM (timer) pour piloter un servo, ADC avec photorésistance. Flash via
-                        ST-Link en SWD.</p>
+                    <div class="card-meta"><span>Embarqué</span><span class="date">2026</span></div>
+                    <h2>Bare metal STM32</h2>
+                    <p class="pitch">Programmation bas niveau sur Blue Pill, directement par les registres.</p>
+                    <ul class="highlights">
+                        <li>Aucune HAL ni framework</li>
+                        <li>GPIO, UART, SysTick, PWM pour un servo, ADC avec photorésistance</li>
+                        <li>Flash via ST-Link en SWD</li>
+                    </ul>
                     <ul class="tags">
                         <li>STM32</li><li>C</li><li>Registres</li><li>UART</li><li>PWM</li><li>ADC</li>
                     </ul>
@@ -257,16 +269,19 @@
 
                 <!-- 5. Snake ESP32 -->
                 <article class="card-projet" data-category="embarque" style="--i:4">
-                    <h2>Snake ESP32 (OLED + page web)</h2>
                     <div class="cover-wrap">
                         <img class="cover" src="img/projects/snake-esp32.jpg"
                             alt="Maquettes des écrans OLED du Snake : menu, partie, game over" loading="lazy">
                         <span class="badge badge-progress">En cours</span>
                     </div>
-                    <span class="date">Oct. 2026</span>
-                    <p>Mandat individuel au CFPT : jeu Snake sur écran OLED piloté par joystick analogique, avec vitesse
-                        progressive, obstacles et sons (buzzer). L'ESP32 crée son propre point d'accès Wi-Fi et sert une
-                        page web qui affiche la partie et les scores en temps réel (WebSocket).</p>
+                    <div class="card-meta"><span>Mandat CFPT</span><span class="date">Oct. 2026</span></div>
+                    <h2>Snake ESP32 (OLED + page web)</h2>
+                    <p class="pitch">Jeu Snake sur écran OLED, suivi en direct depuis une page web.</p>
+                    <ul class="highlights">
+                        <li>Joystick analogique, vitesse progressive, obstacles et sons</li>
+                        <li>L'ESP32 crée son propre point d'accès Wi-Fi</li>
+                        <li>Partie et scores affichés en temps réel (WebSocket)</li>
+                    </ul>
                     <ul class="tags">
                         <li>ESP32</li><li>C++</li><li>OLED</li><li>Joystick</li><li>Wi-Fi</li><li>WebSocket</li>
                     </ul>
@@ -280,16 +295,19 @@
 
                 <!-- 6. Bomb Game -->
                 <article class="card-projet" data-category="embarque" style="--i:5">
-                    <h2>Atelier « Bomb Game »</h2>
                     <div class="cover-wrap">
                         <!-- TODO Sam: fournir une photo -->
                         <div class="cover cover-placeholder"><span>Bomb Game</span></div>
                         <span class="badge badge-done">Terminé</span>
                     </div>
-                    <span class="date">Nov. 2026</span>
-                    <p>Atelier de 20 min co-animé lors de la journée Futur en tous genres, pour des élèves de 9e sans
-                        connaissance en programmation : jeu de désamorçage avec épreuves physiques (clavier, LED, RFID),
-                        puis modification du code par les participants.</p>
+                    <div class="card-meta"><span>Atelier</span><span class="date">Nov. 2026</span></div>
+                    <h2>Atelier « Bomb Game »</h2>
+                    <p class="pitch">Atelier de 20 min pour initier des élèves de 9e à la programmation.</p>
+                    <ul class="highlights">
+                        <li>Co-animé lors de la journée Futur en tous genres</li>
+                        <li>Jeu de désamorçage avec épreuves physiques : clavier, LED, RFID</li>
+                        <li>Les participants modifient eux-mêmes le code</li>
+                    </ul>
                     <ul class="tags">
                         <li>CrowPi</li><li>Embarqué</li><li>Pédagogie</li>
                     </ul>
@@ -297,15 +315,19 @@
 
                 <!-- 7. Système solaire -->
                 <article class="card-projet" data-category="web" style="--i:6">
-                    <h2>Système solaire 3D</h2>
                     <div class="cover-wrap">
                         <img class="cover" src="img/projects/systeme-solaire.jpg"
                             alt="Aperçu du système solaire 3D en Three.js" loading="lazy">
                         <span class="badge badge-done">Terminé</span>
                     </div>
-                    <span class="date">Déc. 2024</span>
-                    <p>Simulation interactive en Three.js : Soleil et 8 planètes texturés en orbite, anneaux de Saturne,
-                        champ de 30 000 étoiles, caméra libre et carte d'info au clic sur le Soleil.</p>
+                    <div class="card-meta"><span>Web 3D</span><span class="date">Déc. 2024</span></div>
+                    <h2>Système solaire 3D</h2>
+                    <p class="pitch">Simulation interactive du système solaire, directement dans le navigateur.</p>
+                    <ul class="highlights">
+                        <li>Soleil et 8 planètes texturés en orbite</li>
+                        <li>Champ de 30 000 étoiles et anneaux de Saturne</li>
+                        <li>Caméra libre et carte d'info au clic</li>
+                    </ul>
                     <ul class="tags">
                         <li>Three.js</li><li>JavaScript</li><li>WebGL</li>
                     </ul>
@@ -323,32 +345,41 @@
 
                 <!-- 8. E-commerce React -->
                 <article class="card-projet" data-category="web" style="--i:7">
-                    <h2>E-commerce React</h2>
                     <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une capture d'écran -->
-                        <div class="cover cover-placeholder"><span>E-commerce</span></div>
+                        <img class="cover" src="img/projects/ecommerce-react.jpg"
+                            alt="Page d'accueil de la boutique Verdant : casque audio noir sur fond sombre" loading="lazy">
                         <!-- TODO Sam: statut (Terminé / En cours) -->
                     </div>
-                    <!-- TODO Sam: date -->
-                    <p>Site e-commerce développé en React.</p>
-                    <!-- TODO Sam: décrire les fonctionnalités (catalogue, panier, paiement, back-end ?) -->
+                    <div class="card-meta"><span>Web</span><span class="date">2026</span></div>
+                    <h2>E-commerce React</h2>
+                    <p class="pitch">Boutique en ligne d'une marque fictive de casques audio, entièrement codée à la main.</p>
+                    <ul class="highlights">
+                        <li>Catalogue produits et panier latéral, conservé après rechargement</li>
+                        <li>Passage de commande et historique des commandes</li>
+                        <li>Routing client et mise en page responsive en CSS natif</li>
+                    </ul>
                     <ul class="tags">
-                        <li>React</li><li>JavaScript</li>
+                        <li>React</li><li>Vite</li><li>React Router</li><li>CSS</li>
                     </ul>
                     <!-- TODO Sam: lien GitHub et/ou site en ligne -->
                 </article>
 
                 <!-- 9. Calendrier -->
                 <article class="card-projet" data-category="web" style="--i:8">
-                    <h2>Calendrier full-stack</h2>
                     <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une capture d'écran -->
-                        <div class="cover cover-placeholder"><span>Calendrier</span></div>
+                        <img class="cover" src="img/projects/calendrier.jpg"
+                            alt="Vue mensuelle du calendrier avec la barre de navigation" loading="lazy">
                         <span class="badge badge-done">Terminé</span>
                     </div>
                     <!-- TODO Sam: date -->
-                    <p>Application de calendrier avec authentification, CRUD des événements et notifications par
-                        e-mail.</p>
+                    <div class="card-meta"><span>Full-stack</span></div>
+                    <h2>Calendrier full-stack</h2>
+                    <p class="pitch">Application de calendrier avec back-end Node.js et base MySQL.</p>
+                    <ul class="highlights">
+                        <li>Authentification des utilisateurs</li>
+                        <li>CRUD des événements via une API REST</li>
+                        <li>Notifications par e-mail</li>
+                    </ul>
                     <ul class="tags">
                         <li>Node.js</li><li>MySQL</li><li>API REST</li>
                     </ul>
@@ -357,14 +388,19 @@
 
                 <!-- 10. Géocaching -->
                 <article class="card-projet" data-category="web" style="--i:9">
-                    <h2>Géocaching</h2>
                     <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une capture d'écran -->
-                        <div class="cover cover-placeholder"><span>Géocaching</span></div>
+                        <img class="cover" src="img/projects/geocaching.jpg"
+                            alt="Carte interactive de Genève de l'application GE-ocaching" loading="lazy">
                         <span class="badge badge-done">Terminé</span>
                     </div>
                     <!-- TODO Sam: date -->
-                    <p>Application de géocaching avec carte interactive et accès à la caméra.</p>
+                    <div class="card-meta"><span>Web mobile</span></div>
+                    <h2>Géocaching</h2>
+                    <p class="pitch">Application web de géocaching, pensée pour le mobile.</p>
+                    <ul class="highlights">
+                        <li>Carte interactive avec Leaflet.js</li>
+                        <li>Accès à la caméra de l'appareil</li>
+                    </ul>
                     <ul class="tags">
                         <li>Leaflet.js</li><li>JavaScript</li><li>PWA</li>
                     </ul>
@@ -373,14 +409,19 @@
 
                 <!-- 11. DevOps -->
                 <article class="card-projet" data-category="web" style="--i:10">
-                    <h2>Projets DevOps</h2>
                     <div class="cover-wrap">
                         <!-- TODO Sam: fournir une capture d'écran -->
                         <div class="cover cover-placeholder"><span>DevOps</span></div>
                         <span class="badge badge-done">Terminé</span>
                     </div>
                     <!-- TODO Sam: date -->
-                    <p>Conteneurisation et pipelines CI/CD.</p>
+                    <div class="card-meta"><span>DevOps</span></div>
+                    <h2>Projets DevOps</h2>
+                    <p class="pitch">Conteneurisation et automatisation des builds et déploiements.</p>
+                    <ul class="highlights">
+                        <li>Applications conteneurisées avec Docker</li>
+                        <li>Pipelines CI/CD sur GitLab, exécutés par GitLab Runner</li>
+                    </ul>
                     <ul class="tags">
                         <li>Docker</li><li>GitLab CI/CD</li><li>GitLab Runner</li>
                     </ul>
