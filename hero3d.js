@@ -4,16 +4,28 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // ---------- Sphère 3D de l'accueil ----------
 // Maillage géodésique vert + points sur les sommets + anneau incliné.
 // Les compétences tournent à la surface du globe ; survoler une compétence ralentit la rotation.
-// Le globe s'incline vers le curseur et les sommets proches du curseur s'allument.
+// Sous le curseur, la sphère gonfle localement et s'allume, puis revient en douceur à la normale.
 // Rotation lente et continue, rendu en pause quand la sphère n'est pas visible.
 
 const container = document.querySelector('.image-display');
 
-const ACCENT = 0x00a58a;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Couleurs de la sphère pour chaque thème (mêmes teintes que style.css)
+const PALETTES = {
+    light: {
+        bg: 0xf6f4ef, accent: 0x0b7a68, lineMix: 0.1, glowLine: 0x00b894, point: 0x0b7a68, glowPoint: 0x00d1ad,
+        ring: 0x16181d, ringOpacity: 0.3
+    },
+    dark: {
+        bg: 0x161616, accent: 0x00a58a, lineMix: 0.4, glowLine: 0x9ffff0, point: 0x00c9a7, glowPoint: 0xe6fffa,
+        ring: 0xffffff, ringOpacity: 0.35
+    }
+};
+const currentTheme = () => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x161616);
+scene.background = new THREE.Color();
 
 const sizes = {
     width: container.clientWidth,
@@ -46,7 +58,7 @@ controls.enableZoom = false;
 controls.enablePan = false;
 controls.enableDamping = true;
 
-// "tilt" s'incline vers la souris et flotte ; "globe" tourne sur lui-même à l'intérieur
+// "tilt" flotte doucement ; "globe" tourne sur lui-même à l'intérieur
 const tilt = new THREE.Group();
 scene.add(tilt);
 
@@ -54,11 +66,12 @@ const globe = new THREE.Group();
 tilt.add(globe);
 
 // ---------- Couleurs par sommet pour la lueur sous le curseur ----------
-// Base assombrie (même rendu qu'avec 60 % d'opacité), lueur vert menthe vive
-const BASE_LINE = new THREE.Color(ACCENT).lerp(new THREE.Color(0x161616), 0.4);
-const GLOW_LINE = new THREE.Color(0x9ffff0);
-const BASE_POINT = new THREE.Color(0x00c9a7);
-const GLOW_POINT = new THREE.Color(0xe6fffa);
+// Base mélangée au fond (même rendu qu'avec 60 % d'opacité), lueur vert menthe vive.
+// Valeurs fixées par applyPalette() selon le thème.
+const BASE_LINE = new THREE.Color();
+const GLOW_LINE = new THREE.Color();
+const BASE_POINT = new THREE.Color();
+const GLOW_POINT = new THREE.Color();
 
 function addGlowColors(geometry, baseColor) {
     const count = geometry.attributes.position.count;
@@ -66,6 +79,7 @@ function addGlowColors(geometry, baseColor) {
     for (let i = 0; i < count; i++) baseColor.toArray(colors, i * 3);
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.userData.glow = new Float32Array(count); // intensité 0..1 de chaque sommet
+    geometry.userData.base = geometry.attributes.position.array.slice(); // positions au repos
 }
 
 // 1. Maillage géodésique (icosaèdre subdivisé) en fil de fer
@@ -90,7 +104,7 @@ globe.add(points);
 // 3. Noyau sombre : masque les lignes de l'arrière pour donner du relief
 const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.98, 48, 48),
-    new THREE.MeshBasicMaterial({ color: 0x161616, transparent: true, opacity: 0.6 })
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.6 })
 );
 core.renderOrder = 1; // dessiné après les lignes : celles de l'arrière sont atténuées, pas effacées
 globe.add(core);
@@ -99,13 +113,45 @@ globe.add(core);
 const ringCurve = new THREE.EllipseCurve(0, 0, 1.3, 1.3, 0, Math.PI * 2);
 const ring = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(ringCurve.getPoints(160)),
-    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })
+    new THREE.LineBasicMaterial({ transparent: true })
 );
 const ringPivot = new THREE.Group();
 ringPivot.rotation.x = Math.PI / 2 - 0.35;
 ringPivot.rotation.z = 0.25;
 ringPivot.add(ring);
 tilt.add(ringPivot);
+
+// ---------- Thème clair / sombre ----------
+function repaintVertices(object, baseColor, glowColor) {
+    const color = object.geometry.attributes.color;
+    const glow = object.geometry.userData.glow;
+    for (let i = 0; i < color.count; i++) {
+        tmpThemeColor.copy(baseColor).lerp(glowColor, glow[i]);
+        color.setXYZ(i, tmpThemeColor.r, tmpThemeColor.g, tmpThemeColor.b);
+    }
+    color.needsUpdate = true;
+}
+const tmpThemeColor = new THREE.Color();
+
+function applyPalette(theme) {
+    const p = PALETTES[theme];
+    scene.background.set(p.bg);
+    BASE_LINE.set(p.accent).lerp(new THREE.Color(p.bg), p.lineMix);
+    GLOW_LINE.set(p.glowLine);
+    BASE_POINT.set(p.point);
+    GLOW_POINT.set(p.glowPoint);
+    core.material.color.set(p.bg);
+    ring.material.color.set(p.ring);
+    ring.material.opacity = p.ringOpacity;
+    repaintVertices(wireframe, BASE_LINE, GLOW_LINE);
+    repaintVertices(points, BASE_POINT, GLOW_POINT);
+}
+applyPalette(currentTheme());
+
+window.addEventListener('themechange', () => {
+    applyPalette(currentTheme());
+    renderer.render(scene, camera); // mise à jour immédiate, même si l'animation est en pause
+});
 
 // ---------- Compétences à la surface du globe ----------
 const SKILLS = [
@@ -149,39 +195,24 @@ const labelWorld = new THREE.Vector3();
 const labelNormal = new THREE.Vector3();
 const toCamera = new THREE.Vector3();
 
-// ---------- Suivi de la souris / du doigt ----------
+// ---------- Souris / doigt : position du curseur ----------
 const pointer = {
     active: false,
-    ndc: new THREE.Vector2(10, 10), // position dans le canvas (-1..1), loin par défaut
-    tiltX: 0,                        // inclinaison visée
-    tiltY: 0
+    ndc: new THREE.Vector2(10, 10) // position dans le canvas (-1..1), loin par défaut
 };
-
-const MAX_TILT_X = 0.35; // radians
-const MAX_TILT_Y = 0.5;
 
 window.addEventListener('pointermove', (e) => {
     const rect = renderer.domElement.getBoundingClientRect();
     pointer.active = true;
-
-    // Position dans le canvas, pour la lueur
     pointer.ndc.set(
         ((e.clientX - rect.left) / rect.width) * 2 - 1,
         -((e.clientY - rect.top) / rect.height) * 2 + 1
     );
-
-    // Position par rapport au centre du globe, pour l'inclinaison (bornée à -1..1)
-    const nx = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
-    const ny = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
-    pointer.tiltY = THREE.MathUtils.clamp(nx, -1, 1) * MAX_TILT_Y;
-    pointer.tiltX = THREE.MathUtils.clamp(ny, -1, 1) * MAX_TILT_X;
 }, { passive: true });
 
 function releasePointer() {
     pointer.active = false;
     pointer.ndc.set(10, 10);
-    pointer.tiltX = 0;
-    pointer.tiltY = 0;
 }
 
 document.addEventListener('pointerleave', releasePointer);
@@ -190,10 +221,13 @@ window.addEventListener('blur', releasePointer);
 window.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') releasePointer(); });
 window.addEventListener('pointercancel', releasePointer);
 
-// ---------- Lueur des sommets proches du curseur ----------
-const GLOW_RADIUS = 0.4;  // rayon de la zone allumée (en unités écran)
-const GLOW_RISE = 10;     // vitesse d'allumage
-const GLOW_FADE = 2.2;    // vitesse d'extinction (traînée)
+// ---------- Bosse lumineuse sous le curseur ----------
+// Les sommets proches du curseur s'allument et sont poussés vers l'extérieur :
+// seule la zone survolée gonfle, puis elle se dégonfle en douceur une fois la souris partie.
+const GLOW_RADIUS = 0.4;  // rayon de la zone touchée (en unités écran)
+const GLOW_RISE = 10;     // vitesse de gonflement
+const GLOW_FADE = 2.2;    // vitesse de retour à la normale (traînée)
+const BULGE = 0.14;       // gonflement max : +14 % du rayon au centre de la zone
 
 const tmp = new THREE.Vector3();
 const tmpNormal = new THREE.Vector3();
@@ -204,6 +238,7 @@ function updateGlow(object, baseColor, glowColor, delta) {
     const position = geometry.attributes.position;
     const color = geometry.attributes.color;
     const glow = geometry.userData.glow;
+    const base = geometry.userData.base;
     const aspect = sizes.width / sizes.height;
 
     let changed = false;
@@ -211,15 +246,19 @@ function updateGlow(object, baseColor, glowColor, delta) {
         let target = 0;
 
         if (pointer.active) {
-            tmp.fromBufferAttribute(position, i).applyMatrix4(object.matrixWorld);
-            // Seuls les sommets de la face visible s'allument
+            // Distance calculée sur la position au repos : la bosse ne se "pousse" pas elle-même
+            tmp.fromArray(base, i * 3).applyMatrix4(object.matrixWorld);
+            // Seuls les sommets de la face visible réagissent
             tmpNormal.copy(tmp).sub(tilt.position).normalize();
             if (tmpNormal.dot(toCamera) > 0.15) {
                 tmp.project(camera);
                 const dx = (tmp.x - pointer.ndc.x) * aspect;
                 const dy = tmp.y - pointer.ndc.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < GLOW_RADIUS) target = 1 - dist / GLOW_RADIUS;
+                if (dist < GLOW_RADIUS) {
+                    const k = 1 - dist / GLOW_RADIUS;
+                    target = k * k * (3 - 2 * k); // courbe douce : bosse arrondie, sans arête
+                }
             }
         }
 
@@ -232,9 +271,15 @@ function updateGlow(object, baseColor, glowColor, delta) {
 
         tmpColor.copy(baseColor).lerp(glowColor, next);
         color.setXYZ(i, tmpColor.r, tmpColor.g, tmpColor.b);
+
+        const s = 1 + BULGE * next;
+        position.setXYZ(i, base[i * 3] * s, base[i * 3 + 1] * s, base[i * 3 + 2] * s);
         changed = true;
     }
-    if (changed) color.needsUpdate = true;
+    if (changed) {
+        color.needsUpdate = true;
+        position.needsUpdate = true;
+    }
 }
 
 function updateLabels(delta) {
@@ -275,10 +320,6 @@ function animate() {
     globe.rotation.x = 0.25 + Math.sin(t * 0.3) * 0.08 * speed;
     ring.rotation.z -= 0.1 * speed * delta;
 
-    // Inclinaison amortie vers le curseur
-    const ease = Math.min(1, delta * 3);
-    tilt.rotation.x += (pointer.tiltX - tilt.rotation.x) * ease;
-    tilt.rotation.y += (pointer.tiltY - tilt.rotation.y) * ease;
 
     if (!reduceMotion) {
         // Léger flottement vertical

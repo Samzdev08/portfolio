@@ -1,82 +1,69 @@
 // ---------- Apparition des éléments au scroll ----------
-// (remplace les anciens seuils fixes scrollY > 500 / > 1000)
-const revealTargets = [
-    ['.technologies-container', 'active-container'],
-    ['.technology-item', 'active-item'],
-    ['.card-projet', 'active-card'],
-    ['.reveal', 'is-visible'],
-];
+const revealItems = document.querySelectorAll('.reveal');
 
 if ('IntersectionObserver' in window) {
     const revealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
-            entry.target.classList.add(entry.target.dataset.revealClass);
+            entry.target.classList.add('is-visible');
             observer.unobserve(entry.target);
         });
     }, { rootMargin: '0px 0px -8% 0px' });
 
-    revealTargets.forEach(([selector, className]) => {
-        document.querySelectorAll(selector).forEach(el => {
-            el.dataset.revealClass = className;
-            revealObserver.observe(el);
-        });
-    });
+    revealItems.forEach(el => revealObserver.observe(el));
 } else {
-    revealTargets.forEach(([selector, className]) => {
-        document.querySelectorAll(selector).forEach(el => el.classList.add(className));
-    });
+    revealItems.forEach(el => el.classList.add('is-visible'));
 }
 
 // ---------- Lien de navigation actif selon la section visible ----------
 const navLinks = document.querySelectorAll('.navigation a');
 
-const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        navLinks.forEach(link => {
-            link.classList.toggle('active', link.dataset.target === entry.target.dataset.section);
+if ('IntersectionObserver' in window) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+            });
         });
-    });
-}, { rootMargin: '-45% 0px -50% 0px' });
+    }, { rootMargin: '-45% 0px -50% 0px' });
 
-navLinks.forEach(link => {
-    const id = link.getAttribute('href').slice(1);
-    // #accueil englobe toute la page : on observe le hero à la place
-    const section = id === 'accueil'
-        ? document.querySelector('.main-content')
-        : document.getElementById(id);
-    if (!section) return;
-    link.dataset.target = id;
-    section.dataset.section = id;
-    sectionObserver.observe(section);
-});
+    document.querySelectorAll('main section[id]').forEach(section => sectionObserver.observe(section));
+}
 
 // ---------- Filtre des projets ----------
+// Chaque projet a une ou plusieurs catégories dans data-cat (ex. "embedded ai")
 const filterButtons = document.querySelectorAll('.filter-btn');
+const projectItems = document.querySelectorAll('#projets [data-cat]');
+const featured = document.querySelector('#projets .case');
+const othersTitle = document.getElementById('autres-projets');
 
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
         const filter = button.dataset.filter;
 
-        filterButtons.forEach(b => {
-            const isActive = b === button;
-            b.classList.toggle('active', isActive);
-            b.setAttribute('aria-pressed', isActive);
+        filterButtons.forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+
+        projectItems.forEach(item => {
+            const cats = item.dataset.cat.split(' ');
+            item.hidden = filter !== 'all' && !cats.includes(filter);
+            // Les projets réaffichés doivent être visibles même s'ils n'étaient pas encore apparus
+            if (!item.hidden) item.classList.add('is-visible');
         });
 
-        document.querySelectorAll('.card-projet').forEach(card => {
-            card.hidden = filter !== 'all' && card.dataset.category !== filter;
-            // Les cartes réaffichées doivent être visibles même si elles n'étaient pas encore apparues
-            if (!card.hidden) card.classList.add('active-card');
-        });
+        // "Autres projets" n'a de sens que si le projet phare est affiché au-dessus
+        if (othersTitle && featured) {
+            othersTitle.hidden = featured.hidden;
+            if (!othersTitle.hidden) othersTitle.classList.add('is-visible');
+        }
     });
 });
 
-// ---------- Clic sur une carte = ouvre son premier lien ----------
-document.querySelectorAll('.card-projet').forEach(card => {
-    const link = card.querySelector('a.link');
+// ---------- Clic sur une carte projet = ouvre son premier lien ----------
+document.querySelectorAll('.card').forEach(card => {
+    const link = card.querySelector('a.lnk');
     if (!link) return;
+    card.classList.add('has-link');
 
     card.addEventListener('click', (e) => {
         // Si le clic est déjà sur un lien, on laisse faire le comportement natif
@@ -85,28 +72,36 @@ document.querySelectorAll('.card-projet').forEach(card => {
     });
 });
 
+// ---------- Thème clair / sombre ----------
+const themeToggle = document.querySelector('.theme-toggle');
+
+function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    if (themeToggle) {
+        themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre');
+    }
+    // Prévient la sphère 3D (hero3d.js) pour qu'elle change ses couleurs
+    window.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
+}
+
+if (themeToggle) {
+    applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+    themeToggle.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        try { localStorage.setItem('theme', next); } catch (e) { /* stockage indisponible : le choix vaut pour cette visite */ }
+    });
+}
+
 // ---------- Année du footer ----------
 const annee = document.getElementById('annee');
 if (annee) annee.textContent = new Date().getFullYear();
 
-// ---------- En-tête collé : style compact au scroll + hauteur pour scroll-margin ----------
+// ---------- En-tête : bordure dès qu'on a scrollé ----------
 const header = document.querySelector('.header');
 
 if (header) {
-    const updateHeaderState = () => {
-        header.classList.toggle('scrolled', window.scrollY > 10);
-    };
+    const updateHeaderState = () => header.classList.toggle('scrolled', window.scrollY > 10);
     updateHeaderState();
     window.addEventListener('scroll', updateHeaderState, { passive: true });
-
-    // La hauteur change (scroll, largeur d'écran) : on la garde à jour pour scroll-margin-top
-    const setHeaderHeight = () => {
-        document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
-    };
-    setHeaderHeight();
-    if ('ResizeObserver' in window) {
-        new ResizeObserver(setHeaderHeight).observe(header);
-    } else {
-        window.addEventListener('resize', setHeaderHeight);
-    }
 }

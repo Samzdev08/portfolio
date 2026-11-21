@@ -19,440 +19,268 @@
 
     <!-- TODO Sam: fournir img/favicon.png, puis décommenter la ligne suivante -->
     <!-- <link rel="icon" href="img/favicon.png" type="image/png"> -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
     <!-- Permet de masquer les éléments animés au scroll uniquement si le JS tourne -->
     <script>document.documentElement.classList.add('js');</script>
+    <!-- Thème : clair par défaut, sinon le dernier choix du visiteur (appliqué avant l'affichage) -->
+    <script>
+        try {
+            document.documentElement.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+        } catch (e) {
+            document.documentElement.dataset.theme = 'light';
+        }
+    </script>
 </head>
 
 <body>
-    <div class="main-container" id="accueil">
-        <header class="header">
-            <div class="logo-container">
+    <!-- ============ EN-TÊTE ============ -->
+    <header class="header">
+        <div class="wrap header-inner">
+            <a class="brand" href="#accueil">
                 <!-- TODO Sam: garder ou remplacer par une vraie photo -->
                 <img src="img/Luffy.jpg" alt="Photo de profil de Samzdev">
                 <span>Samzdev</span>
-            </div>
-            <div class="decoration">
-                <!-- Image purement décorative : alt vide volontaire -->
-                <img src="img/decoration.png" alt="" aria-hidden="true">
-            </div>
+            </a>
             <nav aria-label="Navigation principale">
                 <ul class="navigation">
-                    <li><a href="#accueil">Accueil</a></li>
-                    <li><a href="#apropos">À propos</a></li>
-                    <li><a href="#technologie">Compétences</a></li>
-                    <li><a href="#projects">Projets</a></li>
+                    <li><a href="#projets">Projets</a></li>
+                    <li><a href="#competences">Compétences</a></li>
                     <li><a href="#parcours">Parcours</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <li>
+                        <button type="button" class="theme-toggle" aria-label="Passer au thème sombre">
+                            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                        </button>
+                    </li>
                 </ul>
             </nav>
-        </header>
+        </div>
+    </header>
+
+    <main class="wrap">
 
         <!-- ============ HERO ============ -->
-        <main class="main-content">
-            <div class="greeting-message">
-                <span>Salut, moi c'est Sam 👋</span>
+        <section class="hero" id="accueil">
+            <div class="hero-text">
+                <h1>Du web aux<br><em>systèmes intelligents.</em></h1>
+                <div class="lead">
+                    <p>
+                        Je m'appelle Samuel, j'ai 18 ans et je suis basé à Genève. Formé au CFPT en développement
+                        d'applications avec maturité professionnelle, je développe des projets à la croisée du
+                        génie logiciel, des systèmes embarqués et de l'intelligence artificielle.
+                    </p>
+                    <p>
+                        Applications full-stack, programmation bas niveau sur microcontrôleurs, robotique ou
+                        intégration d'agents IA : j'aime explorer différentes technologies, comprendre leur
+                        fonctionnement et les mettre en pratique à travers des projets concrets.
+                    </p>
+                </div>
+                <div class="ctas">
+                    <a class="btn btn-primary" href="#projets">Voir mes projets →</a>
+                    <a class="btn" href="#contact">Me contacter</a>
+                    <!-- TODO Sam: <a class="btn" href="cv.pdf">Télécharger mon CV</a> -->
+                </div>
+                <dl class="facts">
+                    <div><dt>6</dt><dd>projets, du web à l'embarqué</dd></div>
+                    <div><dt>3 ans</dt><dd>de formation CFPT + maturité</dd></div>
+                    <div><dt>FR · EN · DE</dt><dd>anglais et allemand B1</dd></div>
+                </dl>
             </div>
-            <h1><span>Développeur logiciel &amp; systèmes embarqués</span></h1>
-            <div class="image-display"></div>
-        </main>
+            <!-- Sphère 3D des compétences (hero3d.js) -->
+            <div class="image-display" aria-hidden="true"></div>
+        </section>
 
-        <!-- ============ À PROPOS ============ -->
-        <section class="section" id="apropos">
-            <h1 class="section-title">À propos</h1>
-            <div class="about-card reveal">
-                <p>
-                    Je m'appelle Sam, j'ai 18 ans et je vis à Genève. J'ai suivi une formation de 3 ans en
-                    informatique au <strong>CFPT</strong>, orientation développement d'applications, avec maturité
-                    professionnelle.
-                </p>
-                <p>
-                    Après plusieurs projets web full-stack, je me suis tourné vers les <strong>systèmes embarqués</strong>,
-                    la <strong>robotique</strong> et l'<strong>intelligence artificielle</strong>. Côté embarqué :
-                    ESP32, programmation bare metal sur STM32, impression 3D, électronique. J'apprends en construisant
-                    des projets concrets et je documente mes avancées sur TikTok.
-                </p>
-                <p>Objectif : poursuivre mes études à l'<strong>HEPIA</strong>.</p>
-                <ul class="pills">
-                    <li class="greeting-message">Français (langue maternelle)</li>
-                    <li class="greeting-message">Anglais B1</li>
-                    <li class="greeting-message">Allemand B1</li>
-                </ul>
+        <!-- ============ PROJETS ============ -->
+        <section class="section" id="projets">
+            <div class="sec-head reveal">
+                <div><span class="num">01 — Projets</span><h2>Projets</h2></div>
+                <p>Des idées aux réalisations : découvrez les projets sur lesquels j'ai travaillé.</p>
+            </div>
+
+            <div class="filters reveal" role="group" aria-label="Filtrer les projets">
+                <button type="button" class="filter-btn" data-filter="all" aria-pressed="true">Tous</button>
+                <button type="button" class="filter-btn" data-filter="software" aria-pressed="false">Software &amp; Web</button>
+                <button type="button" class="filter-btn" data-filter="embedded" aria-pressed="false">Embedded &amp; Robotics</button>
+                <button type="button" class="filter-btn" data-filter="ai" aria-pressed="false">AI</button>
+            </div>
+
+            <!-- Hub domotique (projet phare) -->
+            <article class="case reveal" data-cat="embedded ai">
+                <img class="case-img" src="img/projects/hub-domotique.jpg"
+                    alt="Boîtier du hub domotique avec écran OLED et LED verte allumée" loading="lazy">
+                <div class="case-body">
+                    <div class="meta"><span>Embarqué · IA</span><span class="meta-soft">Sept. 2026 · Terminé</span></div>
+                    <h3>Hub domotique ESP32</h3>
+                    <dl class="case-grid">
+                        <div><dt>Objectif</dt><dd>Contrôle d'accès connecté, pilotable depuis un dashboard web ou en langage naturel.</dd></div>
+                        <div><dt>Matériel</dt><dd>Ouverture automatique par détection PIR et servomoteur, retour LED, buzzer et écran OLED.</dd></div>
+                        <div><dt>Logiciel</dt><dd>Dashboard web embarqué : état de la porte, température, ouverture à distance.</dd></div>
+                        <div><dt>IA</dt><dd>Agent Python (tool use) qui interroge le hub et n'invente jamais de valeur.</dd></div>
+                    </dl>
+                    <ul class="tags">
+                        <li>ESP32</li><li>C++</li><li>Serveur web</li><li>Python</li><li>Agent IA</li><li>Tool use</li>
+                    </ul>
+                    <div class="links">
+                        <a class="lnk" href="https://github.com/Samzdev08/domotic_hub" target="_blank" rel="noopener">GitHub ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <div class="sec-head sec-head-sub reveal" id="autres-projets">
+                <h2>Autres projets</h2>
+            </div>
+
+            <div class="grid">
+
+                <!-- STM32 bare metal -->
+                <article class="card reveal" data-cat="embedded">
+                    <!-- TODO Sam: fournir une photo -->
+                    <div class="thumb thumb-empty"><span>Bare metal STM32</span></div>
+                    <div class="card-body">
+                        <div class="meta"><span>Embarqué</span><span class="meta-soft">2026 · En cours</span></div>
+                        <h3>Bare metal STM32</h3>
+                        <p>Programmation par les registres, sans HAL : GPIO, UART, SysTick, PWM, ADC. Flash ST-Link en SWD.</p>
+                        <ul class="tags"><li>STM32</li><li>C</li><li>Registres</li><li>UART</li></ul>
+                        <!-- TODO Sam: URL du dépôt GitHub -->
+                    </div>
+                </article>
+
+                <!-- Drone -->
+                <article class="card reveal" data-cat="embedded">
+                    <!-- TODO Sam: fournir une photo -->
+                    <div class="thumb thumb-empty"><span>Drone</span></div>
+                    <div class="card-body">
+                        <div class="meta"><span>Embarqué</span><span class="meta-soft">Nov. 2026 · En cours</span></div>
+                        <h3>Drone (firmware de vol maison)</h3>
+                        <p>Drone construit de zéro : firmware de vol et régulation PID écrits à la main, châssis imprimé en 3D.</p>
+                        <ul class="tags"><li>ESP32</li><li>C++</li><li>PID</li><li>IMU</li></ul>
+                        <!-- TODO Sam: URL TikTok -> ajouter un lien "Voir sur TikTok" -->
+                    </div>
+                </article>
+
+                <!-- Main robotique -->
+                <article class="card reveal" data-cat="embedded ai">
+                    <!-- TODO Sam: fournir une photo -->
+                    <div class="thumb thumb-empty"><span>Main robotique</span></div>
+                    <div class="card-body">
+                        <div class="meta"><span>Robotique</span><span class="meta-soft">Oct. 2026 · En cours</span></div>
+                        <h3>Main robotique à tendons</h3>
+                        <p>Main à 5 doigts qui reproduit en temps réel une main filmée par webcam (vision par ordinateur).</p>
+                        <ul class="tags"><li>ESP32</li><li>Python</li><li>Vision</li><li>CAO</li></ul>
+                        <!-- TODO Sam: lien (TikTok ou GitHub) -->
+                    </div>
+                </article>
+
+                <!-- Calendrier -->
+                <article class="card reveal" data-cat="software">
+                    <div class="thumb"><img src="img/projects/calendrier.jpg" alt="Vue mensuelle du calendrier avec la barre de navigation" loading="lazy"></div>
+                    <div class="card-body">
+                        <!-- TODO Sam: date -->
+                        <div class="meta"><span>Full-stack</span><span class="meta-soft">Terminé</span></div>
+                        <h3>Calendrier full-stack</h3>
+                        <p>Authentification, événements gérés par une API REST et notifications par e-mail.</p>
+                        <ul class="tags"><li>Node.js</li><li>MySQL</li><li>API REST</li></ul>
+                        <!-- TODO Sam: lien -->
+                    </div>
+                </article>
+
+                <!-- DevOps -->
+                <article class="card reveal" data-cat="software">
+                    <!-- TODO Sam: fournir une capture d'écran -->
+                    <div class="thumb thumb-empty"><span>Projets DevOps</span></div>
+                    <div class="card-body">
+                        <!-- TODO Sam: date -->
+                        <div class="meta"><span>DevOps</span><span class="meta-soft">Terminé</span></div>
+                        <h3>Projets DevOps</h3>
+                        <p>Applications conteneurisées avec Docker et pipelines CI/CD sur GitLab.</p>
+                        <ul class="tags"><li>Docker</li><li>GitLab CI/CD</li><li>GitLab Runner</li></ul>
+                        <!-- TODO Sam: lien -->
+                    </div>
+                </article>
+
             </div>
         </section>
 
         <!-- ============ COMPÉTENCES ============ -->
-        <div class="skills-section" id="technologie">
-            <div class="skills-header">
-                <h1>Compétences</h1>
+        <section class="section" id="competences">
+            <div class="sec-head reveal">
+                <div><span class="num">02 — Compétences</span><h2>Ce que j'utilise</h2></div>
             </div>
-            <div class="yes">
-
-                <div class="technologies-container">
-                    <h2>Langages</h2>
-                    <div class="technology-icons">
-                        <div class="technology-item" style="--i:0"><img src="img/icons/c.svg" alt=""><span class="tech-label">C</span></div>
-                        <div class="technology-item" style="--i:1"><img src="img/icons/cplusplus.svg" alt=""><span class="tech-label">C++</span></div>
-                        <div class="technology-item" style="--i:2"><img src="img/c-sharp-c-icon-1822x2048-wuf3ijab.png" alt=""><span class="tech-label">C#</span></div>
-                        <div class="technology-item" style="--i:3"><img src="img/py.png" alt=""><span class="tech-label">Python</span></div>
-                        <div class="technology-item" style="--i:4"><img src="img/Unofficial_JavaScript_logo_2.svg.png" alt=""><span class="tech-label">JavaScript</span></div>
-                        <div class="technology-item" style="--i:5"><img src="img/icons/typescript.svg" alt=""><span class="tech-label">TypeScript</span></div>
-                        <div class="technology-item" style="--i:6"><img src="img/php.png" alt=""><span class="tech-label">PHP</span></div>
-                        <div class="technology-item" style="--i:7"><img src="img/html.png" alt=""><span class="tech-label">HTML</span></div>
-                        <div class="technology-item" style="--i:8"><img src="img/css-removebg-preview.png" alt=""><span class="tech-label">CSS</span></div>
-                        <div class="technology-item" style="--i:9"><img src="img/sql-database-generic.svg" alt=""><span class="tech-label">SQL</span></div>
+            <div class="skills reveal">
+                <div class="skill-row">
+                    <h3>Embarqué</h3>
+                    <div>
+                        <p>Firmware en C/C++ sur ESP32 et STM32, jusqu'au bare metal par les registres :
+                            capteurs, actionneurs et protocoles de communication.</p>
+                        <ul class="tags">
+                            <li>C</li><li>C++</li><li>ESP32</li><li>STM32</li><li>Arduino</li><li>I2C</li>
+                            <li>UART</li><li>SPI</li><li>PWM</li><li>ADC</li><li>OLED</li><li>Soudure</li><li>Impression 3D</li>
+                        </ul>
                     </div>
                 </div>
-
-                <div class="technologies-container">
-                    <h2>Systèmes embarqués</h2>
-                    <div class="technology-icons">
-                        <div class="technology-item" style="--i:0"><img src="img/icons/espressif.svg" alt=""><span class="tech-label">ESP32</span></div>
-                        <div class="technology-item" style="--i:1"><img src="img/icons/stmicroelectronics.svg" alt=""><span class="tech-label">STM32</span></div>
-                        <div class="technology-item" style="--i:2"><img src="img/icons/arduino.svg" alt=""><span class="tech-label">Arduino</span></div>
+                <div class="skill-row">
+                    <h3>Web</h3>
+                    <div>
+                        <p>Applications full-stack : interfaces React, API en Node.js ou PHP, bases MySQL,
+                            et 3D dans le navigateur avec Three.js.</p>
+                        <ul class="tags">
+                            <li>JavaScript</li><li>TypeScript</li><li>React</li><li>Node.js</li><li>PHP </li>
+                            <li>Three.js</li><li>Vite</li><li>HTML / CSS</li><li>API REST</li><li>MySQL / MariaDB</li><li>Leaflet.js</li>
+                        </ul>
                     </div>
-                    <ul class="tag-list">
-                        <li class="technology-item tag-item" style="--i:3">Bare metal (registres)</li>
-                        <li class="technology-item tag-item" style="--i:4">I2C</li>
-                        <li class="technology-item tag-item" style="--i:5">UART</li>
-                        <li class="technology-item tag-item" style="--i:6">SPI</li>
-                        <li class="technology-item tag-item" style="--i:7">PWM</li>
-                        <li class="technology-item tag-item" style="--i:8">ADC</li>
-                        <li class="technology-item tag-item" style="--i:9">Capteurs (DHT11, PIR, LDR)</li>
-                        <li class="technology-item tag-item" style="--i:10">Servomoteurs</li>
-                        <li class="technology-item tag-item" style="--i:11">Écrans OLED</li>
-                        <li class="technology-item tag-item" style="--i:12">Soudure</li>
-                        <li class="technology-item tag-item" style="--i:13">Impression 3D</li>
-                    </ul>
                 </div>
-
-                <div class="technologies-container">
-                    <h2>Web</h2>
-                    <div class="technology-icons">
-                        <div class="technology-item" style="--i:0"><img src="img/icons/react.svg" alt=""><span class="tech-label">React</span></div>
-                        <div class="technology-item" style="--i:1"><img src="img/node.png" alt=""><span class="tech-label">Node.js</span></div>
-                        <div class="technology-item" style="--i:2"><img src="img/icons/vitejs.svg" alt=""><span class="tech-label">Vite</span></div>
-                        <div class="technology-item" style="--i:3"><img src="img/icons/threejs.svg" alt=""><span class="tech-label">Three.js</span></div>
-                        <div class="technology-item" style="--i:4"><img src="img/mysql.svg" alt=""><span class="tech-label">MySQL</span></div>
+                <div class="skill-row">
+                    <h3>IA &amp; scripts</h3>
+                    <div>
+                        <p>Agents LLM qui pilotent du matériel réel (tool use) et vision par ordinateur en Python.</p>
+                        <ul class="tags">
+                            <li>Python</li><li>Agents LLM</li><li>Tool use</li><li>Vision par ordinateur</li>
+                        </ul>
                     </div>
-                    <ul class="tag-list">
-                        <li class="technology-item tag-item" style="--i:5">Leaflet.js</li>
-                        <li class="technology-item tag-item" style="--i:6">Slim (PHP)</li>
-                        <li class="technology-item tag-item" style="--i:7">API REST</li>
-                        <li class="technology-item tag-item" style="--i:8">MariaDB</li>
-                        <li class="technology-item tag-item" style="--i:9">npm</li>
-                    </ul>
                 </div>
-
-                <div class="technologies-container">
-                    <h2>Outils</h2>
-                    <div class="technology-icons">
-                        <div class="technology-item" style="--i:0"><img src="img/Git_icon.svg.png" alt=""><span class="tech-label">Git</span></div>
-                        <div class="technology-item" style="--i:1"><img src="img/icons/gitlab.svg" alt=""><span class="tech-label">GitLab</span></div>
-                        <div class="technology-item" style="--i:2"><img src="img/docker.svg" alt=""><span class="tech-label">Docker</span></div>
-                        <div class="technology-item" style="--i:3"><img src="img/icons/linux.svg" alt=""><span class="tech-label">Linux</span></div>
-                        <div class="technology-item" style="--i:4"><img src="img/vscode2.svg" alt=""><span class="tech-label">VS Code</span></div>
+                <div class="skill-row">
+                    <h3>Outils</h3>
+                    <div>
+                        <p>Versionnement, conteneurs et intégration continue, sous Linux comme sous Windows.</p>
+                        <ul class="tags">
+                            <li>Git</li><li>GitLab CI/CD</li><li>Docker</li><li>Linux / WSL</li><li>Apache</li>
+                            <li>VS Code</li><li>STM32CubeIDE</li><li>Arduino IDE</li>
+                        </ul>
                     </div>
-                    <ul class="tag-list">
-                        <li class="technology-item tag-item" style="--i:5">CI/CD (GitLab Runner)</li>
-                        <li class="technology-item tag-item" style="--i:6">WSL</li>
-                        <li class="technology-item tag-item" style="--i:7">Apache</li>
-                        <li class="technology-item tag-item" style="--i:8">STM32CubeIDE</li>
-                        <li class="technology-item tag-item" style="--i:9">STM32CubeProgrammer</li>
-                        <li class="technology-item tag-item" style="--i:10">Arduino IDE</li>
-                    </ul>
                 </div>
-
             </div>
-        </div>
-
-        <!-- ============ PROJETS ============ -->
-        <div class="projects-container" id="projects">
-            <h1>Projets</h1>
-
-            <div class="filters" role="group" aria-label="Filtrer les projets">
-                <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">Tous</button>
-                <button type="button" class="filter-btn" data-filter="embarque" aria-pressed="false">Embarqué &amp; robotique</button>
-                <button type="button" class="filter-btn" data-filter="web" aria-pressed="false">Web</button>
-            </div>
-
-            <div class="card">
-
-                <!-- 1. Drone -->
-                <article class="card-projet" data-category="embarque" style="--i:0">
-                    <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une photo -->
-                        <div class="cover cover-placeholder"><span>Drone</span></div>
-                        <span class="badge badge-progress">En cours</span>
-                    </div>
-                    <div class="card-meta"><span>Embarqué</span><span class="date">Nov. 2026</span></div>
-                    <h2>Drone (firmware de vol maison)</h2>
-                    <p class="pitch">Drone construit de zéro, avec un firmware de vol entièrement écrit à la main.</p>
-                    <ul class="highlights">
-                        <li>Régulation PID codée sans bibliothèque de vol</li>
-                        <li>ESP32 + gyroscope, moteurs pilotés par MOSFET</li>
-                        <li>Châssis imprimé en 3D, basé sur le projet open source Flix</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>ESP32</li><li>C++</li><li>PID</li><li>IMU</li><li>MOSFET</li><li>Impression 3D</li>
-                    </ul>
-                    <!-- TODO Sam: URL TikTok -> ajouter un lien "Voir sur TikTok" -->
-                </article>
-
-                <!-- 2. Main robotique -->
-                <article class="card-projet" data-category="embarque" style="--i:1">
-                    <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une photo -->
-                        <div class="cover cover-placeholder"><span>Main robotique</span></div>
-                        <span class="badge badge-progress">En cours</span>
-                    </div>
-                    <div class="card-meta"><span>Robotique</span><span class="date">Oct. 2026</span></div>
-                    <h2>Main robotique à tendons</h2>
-                    <p class="pitch">Main à 5 doigts qui reproduit en temps réel une main filmée par webcam.</p>
-                    <ul class="highlights">
-                        <li>Doigts actionnés par servos et tendons, pilotés par ESP32</li>
-                        <li>Suivi de la main par vision par ordinateur en Python</li>
-                        <li>Pièces modélisées en CAO et imprimées en 3D</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>ESP32</li><li>Python</li><li>Vision par ordinateur</li><li>CAO</li><li>Impression 3D</li>
-                    </ul>
-                    <!-- TODO Sam: lien (TikTok ou GitHub) -->
-                </article>
-
-                <!-- 3. Hub domotique -->
-                <article class="card-projet" data-category="embarque" style="--i:2">
-                    <div class="cover-wrap">
-                        <img class="cover" src="img/projects/hub-domotique.jpg"
-                            alt="Boîtier du hub domotique avec écran OLED et LED verte allumée" loading="lazy">
-                        <span class="badge badge-done">Terminé</span>
-                    </div>
-                    <div class="card-meta"><span>Embarqué · IA</span><span class="date">Sept. 2026</span></div>
-                    <h2>Hub domotique ESP32</h2>
-                    <p class="pitch">Contrôle d'accès connecté, pilotable depuis un dashboard web ou en langage naturel.</p>
-                    <ul class="highlights">
-                        <li>Ouverture automatique par détection PIR et servomoteur</li>
-                        <li>Dashboard web embarqué : état de la porte, température, ouverture à distance</li>
-                        <li>Agent IA Python (tool use) qui permet d'interagir avec le hub en lui posant des questions</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>ESP32</li><li>C++</li><li>Serveur web</li><li>Python</li><li>Agent IA</li><li>Tool use</li>
-                    </ul>
-                    <div class="card-links">
-                        <a class="link" href="https://github.com/Samzdev08/domotic_hub" target="_blank" rel="noopener">
-                            <span>GitHub</span>
-                            <img class="icon" src="img/box-arrow-up-right-svgrepo-com.svg" alt="" aria-hidden="true">
-                        </a>
-                    </div>
-                </article>
-
-                <!-- 4. STM32 bare metal -->
-                <article class="card-projet" data-category="embarque" style="--i:3">
-                    <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une photo -->
-                        <div class="cover cover-placeholder"><span>STM32</span></div>
-                        <span class="badge badge-progress">En cours</span>
-                    </div>
-                    <div class="card-meta"><span>Embarqué</span><span class="date">2026</span></div>
-                    <h2>Bare metal STM32</h2>
-                    <p class="pitch">Programmation bas niveau sur Blue Pill, directement par les registres.</p>
-                    <ul class="highlights">
-                        <li>Aucune HAL ni framework</li>
-                        <li>GPIO, UART, SysTick, PWM pour un servo, ADC avec photorésistance</li>
-                        <li>Flash via ST-Link en SWD</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>STM32</li><li>C</li><li>Registres</li><li>UART</li><li>PWM</li><li>ADC</li>
-                    </ul>
-                    <!-- TODO Sam: URL du dépôt GitHub -->
-                </article>
-
-                <!-- 5. Snake ESP32 -->
-                <article class="card-projet" data-category="embarque" style="--i:4">
-                    <div class="cover-wrap">
-                        <img class="cover" src="img/projects/snake-esp32.jpg"
-                            alt="Maquettes des écrans OLED du Snake : menu, partie, game over" loading="lazy">
-                        <span class="badge badge-progress">En cours</span>
-                    </div>
-                    <div class="card-meta"><span>Mandat CFPT</span><span class="date">Oct. 2026</span></div>
-                    <h2>Snake ESP32 (OLED + page web)</h2>
-                    <p class="pitch">Jeu Snake sur écran OLED, suivi en direct depuis une page web.</p>
-                    <ul class="highlights">
-                        <li>Joystick analogique, vitesse progressive, obstacles et sons</li>
-                        <li>L'ESP32 crée son propre point d'accès Wi-Fi</li>
-                        <li>Partie et scores affichés en temps réel (WebSocket)</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>ESP32</li><li>C++</li><li>OLED</li><li>Joystick</li><li>Wi-Fi</li><li>WebSocket</li>
-                    </ul>
-                    <div class="card-links">
-                        <a class="link" href="https://github.com/Samzdev08/snake-esp32" target="_blank" rel="noopener">
-                            <span>GitHub</span>
-                            <img class="icon" src="img/box-arrow-up-right-svgrepo-com.svg" alt="" aria-hidden="true">
-                        </a>
-                    </div>
-                </article>
-
-                <!-- 6. Bomb Game -->
-                <article class="card-projet" data-category="embarque" style="--i:5">
-                    <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une photo -->
-                        <div class="cover cover-placeholder"><span>Bomb Game</span></div>
-                        <span class="badge badge-done">Terminé</span>
-                    </div>
-                    <div class="card-meta"><span>Atelier</span><span class="date">Nov. 2026</span></div>
-                    <h2>Atelier « Bomb Game »</h2>
-                    <p class="pitch">Atelier de 20 min pour initier des élèves de 9e à la programmation.</p>
-                    <ul class="highlights">
-                        <li>Co-animé lors de la journée Futur en tous genres</li>
-                        <li>Jeu de désamorçage avec épreuves physiques : clavier, LED, RFID</li>
-                        <li>Les participants modifient eux-mêmes le code</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>CrowPi</li><li>Embarqué</li><li>Pédagogie</li>
-                    </ul>
-                </article>
-
-                <!-- 7. Système solaire -->
-                <article class="card-projet" data-category="web" style="--i:6">
-                    <div class="cover-wrap">
-                        <img class="cover" src="img/projects/systeme-solaire.jpg"
-                            alt="Aperçu du système solaire 3D en Three.js" loading="lazy">
-                        <span class="badge badge-done">Terminé</span>
-                    </div>
-                    <div class="card-meta"><span>Web 3D</span><span class="date">Déc. 2024</span></div>
-                    <h2>Système solaire 3D</h2>
-                    <p class="pitch">Simulation interactive du système solaire, directement dans le navigateur.</p>
-                    <ul class="highlights">
-                        <li>Soleil et 8 planètes texturés en orbite</li>
-                        <li>Champ de 30 000 étoiles et anneaux de Saturne</li>
-                        <li>Caméra libre et carte d'info au clic</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>Three.js</li><li>JavaScript</li><li>WebGL</li>
-                    </ul>
-                    <div class="card-links">
-                        <a class="link" href="https://samzdev08.github.io/system-solar-3d/" target="_blank" rel="noopener">
-                            <span>Voir le site</span>
-                            <img class="icon" src="img/box-arrow-up-right-svgrepo-com.svg" alt="" aria-hidden="true">
-                        </a>
-                        <a class="link" href="https://github.com/Samzdev08/system-solar-3d" target="_blank" rel="noopener">
-                            <span>GitHub</span>
-                            <img class="icon" src="img/box-arrow-up-right-svgrepo-com.svg" alt="" aria-hidden="true">
-                        </a>
-                    </div>
-                </article>
-
-                <!-- 8. E-commerce React -->
-                <article class="card-projet" data-category="web" style="--i:7">
-                    <div class="cover-wrap">
-                        <img class="cover" src="img/projects/ecommerce-react.jpg"
-                            alt="Page d'accueil de la boutique Verdant : casque audio noir sur fond sombre" loading="lazy">
-                        <!-- TODO Sam: statut (Terminé / En cours) -->
-                    </div>
-                    <div class="card-meta"><span>Web</span><span class="date">2026</span></div>
-                    <h2>E-commerce React</h2>
-                    <p class="pitch">Boutique en ligne d'une marque fictive de casques audio, entièrement codée à la main.</p>
-                    <ul class="highlights">
-                        <li>Catalogue produits et panier latéral, conservé après rechargement</li>
-                        <li>Passage de commande et historique des commandes</li>
-                        <li>Routing client et mise en page responsive en CSS natif</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>React</li><li>Vite</li><li>React Router</li><li>CSS</li>
-                    </ul>
-                    <!-- TODO Sam: lien GitHub et/ou site en ligne -->
-                </article>
-
-                <!-- 9. Calendrier -->
-                <article class="card-projet" data-category="web" style="--i:8">
-                    <div class="cover-wrap">
-                        <img class="cover" src="img/projects/calendrier.jpg"
-                            alt="Vue mensuelle du calendrier avec la barre de navigation" loading="lazy">
-                        <span class="badge badge-done">Terminé</span>
-                    </div>
-                    <!-- TODO Sam: date -->
-                    <div class="card-meta"><span>Full-stack</span></div>
-                    <h2>Calendrier full-stack</h2>
-                    <p class="pitch">Application de calendrier avec back-end Node.js et base MySQL.</p>
-                    <ul class="highlights">
-                        <li>Authentification des utilisateurs</li>
-                        <li>CRUD des événements via une API REST</li>
-                        <li>Notifications par e-mail</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>Node.js</li><li>MySQL</li><li>API REST</li>
-                    </ul>
-                    <!-- TODO Sam: lien -->
-                </article>
-
-                <!-- 10. Géocaching -->
-                <article class="card-projet" data-category="web" style="--i:9">
-                    <div class="cover-wrap">
-                        <img class="cover" src="img/projects/geocaching.jpg"
-                            alt="Carte interactive de Genève de l'application GE-ocaching" loading="lazy">
-                        <span class="badge badge-done">Terminé</span>
-                    </div>
-                    <!-- TODO Sam: date -->
-                    <div class="card-meta"><span>Web mobile</span></div>
-                    <h2>Géocaching</h2>
-                    <p class="pitch">Application web de géocaching, pensée pour le mobile.</p>
-                    <ul class="highlights">
-                        <li>Carte interactive avec Leaflet.js</li>
-                        <li>Accès à la caméra de l'appareil</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>Leaflet.js</li><li>JavaScript</li><li>PWA</li>
-                    </ul>
-                    <!-- TODO Sam: lien -->
-                </article>
-
-                <!-- 11. DevOps -->
-                <article class="card-projet" data-category="web" style="--i:10">
-                    <div class="cover-wrap">
-                        <!-- TODO Sam: fournir une capture d'écran -->
-                        <div class="cover cover-placeholder"><span>DevOps</span></div>
-                        <span class="badge badge-done">Terminé</span>
-                    </div>
-                    <!-- TODO Sam: date -->
-                    <div class="card-meta"><span>DevOps</span></div>
-                    <h2>Projets DevOps</h2>
-                    <p class="pitch">Conteneurisation et automatisation des builds et déploiements.</p>
-                    <ul class="highlights">
-                        <li>Applications conteneurisées avec Docker</li>
-                        <li>Pipelines CI/CD sur GitLab, exécutés par GitLab Runner</li>
-                    </ul>
-                    <ul class="tags">
-                        <li>Docker</li><li>GitLab CI/CD</li><li>GitLab Runner</li>
-                    </ul>
-                    <!-- TODO Sam: lien -->
-                </article>
-
-            </div>
-        </div>
+        </section>
 
         <!-- ============ PARCOURS ============ -->
         <section class="section" id="parcours">
-            <h1 class="section-title">Parcours</h1>
-            <ol class="timeline">
-                <li class="timeline-item reveal">
+            <div class="sec-head reveal">
+                <div><span class="num">03 — Parcours</span><h2>Parcours</h2></div>
+            </div>
+            <ol class="timeline reveal">
+                <li>
                     <!-- TODO Sam: année de début de la formation -->
-                    <span class="timeline-date">Jusqu'en 2026</span>
+                    <span class="date">Jusqu'en 2026</span>
                     <h3>Formation d'informaticien · CFPT Informatique (Genève)</h3>
                     <p>Orientation développement d'applications, avec maturité professionnelle.</p>
                 </li>
-                <li class="timeline-item reveal">
-                    <span class="timeline-date">2026</span>
+                <li>
+                    <span class="date">2026</span>
                     <h3>Passage aux systèmes embarqués</h3>
                     <p>ESP32, programmation bare metal sur STM32, robotique et impression 3D.</p>
                 </li>
-                <li class="timeline-item reveal">
-                    <span class="timeline-date">Nov. 2026</span>
+                <li>
+                    <span class="date">Nov. 2026</span>
                     <h3>Atelier « Bomb Game »</h3>
                     <p>Co-animation d'un atelier lors de la journée Futur en tous genres.</p>
                 </li>
-                <li class="timeline-item reveal">
-                    <span class="timeline-date">Objectif</span>
+                <li class="goal">
+                    <span class="date">Objectif</span>
                     <h3>Bachelor à l'HEPIA</h3>
                     <p>Poursuivre en ingénierie, orientée systèmes embarqués.</p>
                 </li>
@@ -460,23 +288,30 @@
         </section>
 
         <!-- ============ CONTACT ============ -->
-        <section class="section" id="contact">
-            <h1 class="section-title">Contact</h1>
-            <div class="contact-links reveal">
-                <a class="link" href="https://github.com/Samzdev08" target="_blank" rel="noopener">
-                    <img class="icon" src="img/icons/github.svg" alt="" aria-hidden="true">
-                    <span>GitHub</span>
+        <section class="contact reveal" id="contact">
+            <div class="contact-text">
+                <h2>Construisons quelque chose ensemble.</h2>
+                <p>Une opportunité de stage, une collaboration ou simplement envie d'échanger autour d'un projet ?
+                    N'hésitez pas à me contacter.</p>
+                <a class="contact-mail" href="mailto:samtidokz@gmail.com">samtidokz@gmail.com</a>
+            </div>
+            <div class="ctas">
+                <!-- Ouvre la boîte mail du visiteur avec l'adresse et l'objet déjà remplis -->
+                <a class="btn btn-primary" href="mailto:samtidokz@gmail.com?subject=Prise%20de%20contact%20depuis%20ton%20portfolio">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                    Envoyer un e-mail
                 </a>
-                <!-- TODO Sam: TikTok -> <a class="link" href="URL" target="_blank" rel="noopener"><span>TikTok</span></a> -->
-                <!-- TODO Sam: LinkedIn (URL ou supprimer) -->
-                <!-- TODO Sam: e-mail -> <a class="link" href="mailto:ADRESSE"><span>E-mail</span></a> -->
+                <!-- TODO Sam: TikTok / LinkedIn -->
+                <a class="btn" href="https://github.com/Samzdev08" target="_blank" rel="noopener">
+                    <img class="icon" src="img/icons/github.svg" alt="" aria-hidden="true">GitHub
+                </a>
             </div>
         </section>
+    </main>
 
-        <footer>
-            <p>©2024 - <span id="annee">2026</span> Samzdev. Tous droits réservés</p>
-        </footer>
-    </div>
+    <footer>
+        <p>© 2024 – <span id="annee">2026</span> Samzdev</p>
+    </footer>
 
     <script type="importmap">
         {
