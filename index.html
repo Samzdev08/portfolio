@@ -27,13 +27,22 @@
 
     <!-- Permet de masquer les éléments animés au scroll uniquement si le JS tourne -->
     <script>document.documentElement.classList.add('js');</script>
-    <!-- Thème : clair par défaut, sinon le dernier choix du visiteur (appliqué avant l'affichage) -->
+    <!-- Le site gère lui-même le clair et le sombre : le navigateur ne doit pas l'assombrir de force -->
+    <meta name="color-scheme" content="light dark">
+    <!-- Couleur des barres du navigateur (Safari iOS, Chrome Android), mise à jour par scripts.js -->
+    <meta name="theme-color" content="#f6f4ef">
+
+    <!-- Thème : le dernier choix du visiteur, sinon le réglage de l'appareil (appliqué avant l'affichage) -->
     <script>
-        try {
-            document.documentElement.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
-        } catch (e) {
-            document.documentElement.dataset.theme = 'light';
-        }
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem('theme'); } catch (e) { /* stockage indisponible */ }
+            var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var theme = (saved === 'dark' || saved === 'light') ? saved : (systemDark ? 'dark' : 'light');
+            document.documentElement.dataset.theme = theme;
+            document.querySelector('meta[name="theme-color"]')
+                .setAttribute('content', theme === 'dark' ? '#161616' : '#f6f4ef');
+        })();
     </script>
 </head>
 

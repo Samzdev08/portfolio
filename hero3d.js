@@ -24,8 +24,29 @@ const PALETTES = {
 };
 const currentTheme = () => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 
+// Couleur réellement affichée derrière la sphère. On la lit sur la page plutôt que de la supposer :
+// si un navigateur ou une app assombrit le site de force (mode sombre iOS…), la sphère suit quand même.
+const pageBg = new THREE.Color();
+function readPageBackground(theme) {
+    const css = getComputedStyle(document.body).backgroundColor;
+    const match = css && css.match(/rgba?\(([^)]+)\)/);
+    if (match) {
+        const [r, g, b, a = 1] = match[1].split(/[ ,/]+/).filter(Boolean).map(Number);
+        if (a > 0) return pageBg.setRGB(r / 255, g / 255, b / 255, THREE.SRGBColorSpace);
+    }
+    return pageBg.set(PALETTES[theme].bg); // fond non lisible : couleur prévue par le thème
+}
+
+// Thème "visuel" : d'après la luminosité réelle du fond, pas seulement d'après le réglage du site
+function visualTheme() {
+    const theme = currentTheme();
+    const bg = readPageBackground(theme);
+    const hsl = bg.getHSL({}, THREE.SRGBColorSpace);
+    return hsl.l < 0.45 ? 'dark' : 'light';
+}
+
+// Pas de fond dans la scène : le canvas est transparent et laisse voir la page
 const scene = new THREE.Scene();
-scene.background = new THREE.Color();
 
 const sizes = {
     width: container.clientWidth,
@@ -48,7 +69,8 @@ function fitCamera() {
 }
 fitCamera();
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setClearColor(0x000000, 0);
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 container.appendChild(renderer.domElement);
@@ -133,25 +155,32 @@ function repaintVertices(object, baseColor, glowColor) {
 }
 const tmpThemeColor = new THREE.Color();
 
-function applyPalette(theme) {
+function applyPalette() {
+    const theme = visualTheme();          // lit aussi le fond réel de la page dans pageBg
     const p = PALETTES[theme];
-    scene.background.set(p.bg);
-    BASE_LINE.set(p.accent).lerp(new THREE.Color(p.bg), p.lineMix);
+    BASE_LINE.set(p.accent).lerp(pageBg, p.lineMix);
     GLOW_LINE.set(p.glowLine);
     BASE_POINT.set(p.point);
     GLOW_POINT.set(p.glowPoint);
-    core.material.color.set(p.bg);
+    core.material.color.copy(pageBg);     // le noyau a la couleur exacte du fond de la page
     ring.material.color.set(p.ring);
     ring.material.opacity = p.ringOpacity;
     repaintVertices(wireframe, BASE_LINE, GLOW_LINE);
     repaintVertices(points, BASE_POINT, GLOW_POINT);
 }
-applyPalette(currentTheme());
-
-window.addEventListener('themechange', () => {
-    applyPalette(currentTheme());
+function refreshPalette() {
+    applyPalette();
     renderer.render(scene, camera); // mise à jour immédiate, même si l'animation est en pause
+}
+applyPalette();
+
+window.addEventListener('themechange', refreshPalette);
+// Le fond de la page change avec une transition : on relit sa couleur une fois la transition finie
+document.body.addEventListener('transitionend', (e) => {
+    if (e.target === document.body && e.propertyName === 'background-color') refreshPalette();
 });
+// Filet de sécurité : relecture après le chargement complet (styles injectés par le navigateur…)
+window.addEventListener('load', () => setTimeout(refreshPalette, 300));
 
 // ---------- Compétences à la surface du globe ----------
 const SKILLS = [

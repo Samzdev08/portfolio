@@ -75,22 +75,46 @@ document.querySelectorAll('.card').forEach(card => {
 // ---------- Thème clair / sombre ----------
 const themeToggle = document.querySelector('.theme-toggle');
 
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
 function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
     if (themeToggle) {
         themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre');
     }
+    // Barres du navigateur (Safari iOS…) de la même couleur que la page
+    if (themeColorMeta) themeColorMeta.setAttribute('content', theme === 'dark' ? '#161616' : '#f6f4ef');
     // Prévient la sphère 3D (hero3d.js) pour qu'elle change ses couleurs
     window.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
 }
 
+function savedTheme() {
+    try {
+        const saved = localStorage.getItem('theme');
+        return saved === 'dark' || saved === 'light' ? saved : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+
 if (themeToggle) {
-    applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
     themeToggle.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
         applyTheme(next);
         try { localStorage.setItem('theme', next); } catch (e) { /* stockage indisponible : le choix vaut pour cette visite */ }
     });
+}
+
+// Tant que le visiteur n'a pas choisi lui-même, le site suit le réglage clair / sombre de l'appareil
+if (window.matchMedia) {
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const followSystem = () => {
+        if (!savedTheme()) applyTheme(systemDark.matches ? 'dark' : 'light');
+    };
+    if (systemDark.addEventListener) systemDark.addEventListener('change', followSystem);
+    else if (systemDark.addListener) systemDark.addListener(followSystem); // anciens Safari
 }
 
 // ---------- Année du footer ----------
