@@ -212,10 +212,11 @@ const SKILLS = [
     { name: 'Linux', desc: 'Système pour le développement et les serveurs, aussi via WSL.' }
 ];
 const LABEL_RADIUS = 1.12;     // juste au-dessus de la surface
-const HOVER_SLOWDOWN = 0.15;   // vitesse de rotation quand une compétence est survolée
+const INFO_SLOWDOWN = 0.15;    // vitesse de rotation pendant qu'une fiche est ouverte
+// Le simple survol ne ralentit plus la sphère : en balayant avec la souris, la vitesse changeait
+// sans arrêt (freinage / réaccélération) et les étiquettes avançaient par à-coups.
 
-const labels = [];             // { el, local: Vector3, skill }
-let hoveredLabels = 0;
+const labels = [];             // { el, local: Vector3, skill, opacity, z }
 let labelSlowdown = 1;         // 1 = vitesse normale
 let activeLabel = null;        // compétence dont la fiche est ouverte
 let info = null;               // la fiche (un seul élément, déplacé sous la compétence choisie)
@@ -277,11 +278,9 @@ function createSkillLabels() {
         el.textContent = skill.name;
         el.setAttribute('aria-expanded', 'false');
         el.setAttribute('aria-controls', 'globe-info');
-        el.addEventListener('pointerenter', () => { hoveredLabels++; });
-        el.addEventListener('pointerleave', () => { hoveredLabels = Math.max(0, hoveredLabels - 1); });
         layer.appendChild(el);
 
-        const label = { el, local, skill };
+        const label = { el, local, skill, opacity: -1, z: -1 };
         el.addEventListener('click', () => {
             if (activeLabel === label) closeInfo();
             else openInfo(label);
@@ -404,8 +403,8 @@ function updateGlow(object, baseColor, glowColor, delta) {
 }
 
 function updateLabels(delta) {
-    // Ralentit en douceur quand une compétence est survolée
-    const targetSlowdown = hoveredLabels > 0 || activeLabel ? HOVER_SLOWDOWN : 1;
+    // Ralentit en douceur pendant qu'une fiche est ouverte (clic), pas au simple survol
+    const targetSlowdown = activeLabel ? INFO_SLOWDOWN : 1;
     labelSlowdown += (targetSlowdown - labelSlowdown) * Math.min(1, delta * 4);
 
     scene.updateMatrixWorld();
@@ -422,10 +421,16 @@ function updateLabels(delta) {
 
         const front = facing > 0.05;
         const opacity = front ? 0.45 + 0.55 * facing : Math.max(0.08, 0.2 + facing * 0.2);
-        label.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
-        label.el.style.opacity = opacity.toFixed(2);
-        label.el.style.zIndex = String(Math.round((facing + 1) * 100));
-        label.el.classList.toggle('is-back', !front);
+        // translate3d + 2 décimales : déplacement au sous-pixel par la carte graphique,
+        // sans "marches" d'un pixel quand l'étiquette avance lentement
+        label.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) translate(-50%, -50%)`;
+
+        // Opacité et profondeur : mises à jour seulement quand elles changent vraiment
+        const o = Math.round(opacity * 50) / 50;
+        if (o !== label.opacity) { label.opacity = o; label.el.style.opacity = String(o); }
+        const z = Math.round((facing + 1) * 50);
+        if (z !== label.z) { label.z = z; label.el.style.zIndex = String(z); }
+        if (label.el.classList.contains('is-back') === front) label.el.classList.toggle('is-back', !front);
 
         // La fiche suit sa compétence ; elle se ferme si la compétence passe derrière le globe
         if (label === activeLabel) {
