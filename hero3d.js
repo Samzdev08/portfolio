@@ -183,40 +183,132 @@ document.body.addEventListener('transitionend', (e) => {
 window.addEventListener('load', () => setTimeout(refreshPalette, 300));
 
 // ---------- Compétences à la surface du globe ----------
+// Cliquer sur une compétence ouvre une fiche : ce qu'est la techno + les projets du site qui l'utilisent
 const SKILLS = [
-    'ESP32', 'STM32', 'Arduino', 'C', 'C++', 'Python', 'JavaScript', 'TypeScript',
-    'React', 'Node.js', 'Three.js', 'PHP', 'SQL', 'Docker', 'Git', 'Linux'
+    { name: 'ESP32', desc: "Microcontrôleur Wi-Fi et Bluetooth d'Espressif, programmé en C++.",
+      projects: ['Hub domotique', 'Drone', 'Main robotique'] },
+    { name: 'STM32', desc: 'Microcontrôleurs ARM Cortex-M de STMicroelectronics, programmés directement par les registres, sans HAL.',
+      projects: ['Bare metal STM32'] },
+    { name: 'Arduino', desc: 'Plateforme et framework pour prototyper rapidement sur microcontrôleur.' },
+    { name: 'C', desc: 'Langage bas niveau pour programmer au plus près du matériel.',
+      projects: ['Bare metal STM32'] },
+    { name: 'C++', desc: 'Langage des firmwares ESP32 : performant et structuré.',
+      projects: ['Hub domotique', 'Drone'] },
+    { name: 'Python', desc: "Langage de scripts, d'IA et de vision par ordinateur.",
+      projects: ['Hub domotique (agent IA)', 'Main robotique (vision webcam)'] },
+    { name: 'JavaScript', desc: 'Le langage du web, côté navigateur comme côté serveur.',
+      projects: ['Calendrier full-stack', 'Ce portfolio'] },
+    { name: 'TypeScript', desc: 'JavaScript avec typage statique, pour un code plus fiable.' },
+    { name: 'React', desc: 'Bibliothèque JavaScript pour construire des interfaces à base de composants.' },
+    { name: 'Node.js', desc: 'JavaScript côté serveur, pour créer des API.',
+      projects: ['Calendrier full-stack'] },
+    { name: 'Three.js', desc: 'Bibliothèque 3D (WebGL) pour le navigateur : cette sphère est faite avec.',
+      projects: ['Ce portfolio'] },
+    { name: 'PHP', desc: 'Langage serveur pour sites et API web.' },
+    { name: 'SQL', desc: 'Langage des bases de données relationnelles (MySQL / MariaDB).',
+      projects: ['Calendrier full-stack'] },
+    { name: 'Docker', desc: 'Conteneurs : une application et son environnement empaquetés ensemble.' },
+    { name: 'Git', desc: 'Gestion de versions : historique, branches et travail en équipe.' },
+    { name: 'Linux', desc: 'Système pour le développement et les serveurs, aussi via WSL.' }
 ];
 const LABEL_RADIUS = 1.12;     // juste au-dessus de la surface
 const HOVER_SLOWDOWN = 0.15;   // vitesse de rotation quand une compétence est survolée
 
-const labels = [];             // { el, local: Vector3 }
+const labels = [];             // { el, local: Vector3, skill }
 let hoveredLabels = 0;
 let labelSlowdown = 1;         // 1 = vitesse normale
+let activeLabel = null;        // compétence dont la fiche est ouverte
+let info = null;               // la fiche (un seul élément, déplacé sous la compétence choisie)
+
+function openInfo(label) {
+    if (activeLabel) activeLabel.el.classList.remove('is-active');
+    activeLabel = label;
+    label.el.classList.add('is-active');
+    labels.forEach(l => l.el.setAttribute('aria-expanded', String(l === label)));
+
+    const { name, desc, projects } = label.skill;
+    info.replaceChildren();
+    const title = document.createElement('strong');
+    title.className = 'globe-info-title';
+    title.textContent = name;
+    const text = document.createElement('p');
+    text.textContent = desc;
+    info.append(title, text);
+    if (projects && projects.length) {
+        const used = document.createElement('p');
+        used.className = 'globe-info-projects';
+        used.textContent = 'Projets : ' + projects.join(', ');
+        info.append(used);
+    }
+    info.hidden = false;
+}
+
+function closeInfo() {
+    if (!activeLabel) return;
+    activeLabel.el.classList.remove('is-active');
+    activeLabel.el.setAttribute('aria-expanded', 'false');
+    activeLabel = null;
+    info.hidden = true;
+}
 
 function createSkillLabels() {
     const layer = document.createElement('div');
     layer.className = 'globe-labels';
     container.appendChild(layer);
 
+    info = document.createElement('div');
+    info.className = 'globe-info';
+    info.id = 'globe-info';
+    info.setAttribute('role', 'status');   // lu par les lecteurs d'écran quand elle change
+    info.hidden = true;
+
     // Répartition uniforme sur la sphère (spirale de Fibonacci)
     const golden = Math.PI * (3 - Math.sqrt(5));
-    SKILLS.forEach((name, i) => {
+    SKILLS.forEach((skill, i) => {
         const y = 1 - (i / (SKILLS.length - 1)) * 2 * 0.85; // évite les pôles exacts
         const r = Math.sqrt(1 - y * y);
         const theta = golden * i;
         const local = new THREE.Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r)
             .multiplyScalar(LABEL_RADIUS);
 
-        const el = document.createElement('span');
+        const el = document.createElement('button');
+        el.type = 'button';
         el.className = 'globe-label';
-        el.textContent = name;
+        el.textContent = skill.name;
+        el.setAttribute('aria-expanded', 'false');
+        el.setAttribute('aria-controls', 'globe-info');
         el.addEventListener('pointerenter', () => { hoveredLabels++; });
         el.addEventListener('pointerleave', () => { hoveredLabels = Math.max(0, hoveredLabels - 1); });
         layer.appendChild(el);
 
-        labels.push({ el, local });
+        const label = { el, local, skill };
+        el.addEventListener('click', () => {
+            if (activeLabel === label) closeInfo();
+            else openInfo(label);
+        });
+        labels.push(label);
     });
+
+    layer.appendChild(info);
+
+    // Fermeture : clic ailleurs ou touche Échap
+    document.addEventListener('pointerdown', (e) => {
+        if (activeLabel && !e.target.closest('.globe-label, .globe-info')) closeInfo();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeInfo();
+    });
+}
+
+// Place la fiche sous la compétence choisie (ou au-dessus si elle sortirait en bas)
+function placeInfo(x, y) {
+    const w = info.offsetWidth;
+    const h = info.offsetHeight;
+    const margin = 8;
+    const left = Math.min(Math.max(x - w / 2, margin), sizes.width - w - margin);
+    let top = y + 18;
+    if (top + h > sizes.height - margin) top = y - 18 - h;
+    info.style.transform = `translate(${left.toFixed(1)}px, ${Math.max(margin, top).toFixed(1)}px)`;
 }
 createSkillLabels();
 
@@ -313,7 +405,7 @@ function updateGlow(object, baseColor, glowColor, delta) {
 
 function updateLabels(delta) {
     // Ralentit en douceur quand une compétence est survolée
-    const targetSlowdown = hoveredLabels > 0 ? HOVER_SLOWDOWN : 1;
+    const targetSlowdown = hoveredLabels > 0 || activeLabel ? HOVER_SLOWDOWN : 1;
     labelSlowdown += (targetSlowdown - labelSlowdown) * Math.min(1, delta * 4);
 
     scene.updateMatrixWorld();
@@ -334,8 +426,29 @@ function updateLabels(delta) {
         label.el.style.opacity = opacity.toFixed(2);
         label.el.style.zIndex = String(Math.round((facing + 1) * 100));
         label.el.classList.toggle('is-back', !front);
+
+        // La fiche suit sa compétence ; elle se ferme si la compétence passe derrière le globe
+        if (label === activeLabel) {
+            if (front) placeInfo(x, y);
+            else closeInfo();
+        }
     }
 }
+
+// ---------- Rotation à la main : l'animation automatique s'efface ----------
+// Pendant que l'utilisateur fait tourner la sphère, rotation / oscillation / flottement s'arrêtent
+// (sinon les deux mouvements se cumulent et ça saccade). Ils reprennent en douceur après un temps.
+const RESUME_DELAY = 2500;     // ms après le lâcher
+let dragging = false;
+let resumeAt = 0;
+let autoFactor = 1;            // 1 = animation auto normale, 0 = arrêtée
+let autoTime = 0;              // temps "animé" : figé pendant la manipulation, donc pas de saut à la reprise
+
+controls.addEventListener('start', () => { dragging = true; });
+controls.addEventListener('end', () => {
+    dragging = false;
+    resumeAt = performance.now() + RESUME_DELAY;
+});
 
 // ---------- Animation continue ----------
 const clock = new THREE.Clock();
@@ -343,11 +456,16 @@ const speed = reduceMotion ? 0.25 : 1;
 
 function animate() {
     const delta = Math.min(clock.getDelta(), 0.05);
-    const t = clock.elapsedTime;
 
-    globe.rotation.y += 0.18 * speed * labelSlowdown * delta;
+    // Arrêt rapide quand on attrape la sphère, reprise progressive (~1 s) après le délai
+    const autoTarget = dragging || performance.now() < resumeAt ? 0 : 1;
+    autoFactor += (autoTarget - autoFactor) * Math.min(1, delta * (autoTarget ? 1.5 : 12));
+    autoTime += delta * autoFactor;
+    const t = autoTime;
+
+    globe.rotation.y += 0.18 * speed * labelSlowdown * autoFactor * delta;
     globe.rotation.x = 0.25 + Math.sin(t * 0.3) * 0.08 * speed;
-    ring.rotation.z -= 0.1 * speed * delta;
+    ring.rotation.z -= 0.1 * speed * autoFactor * delta;
 
 
     if (!reduceMotion) {
